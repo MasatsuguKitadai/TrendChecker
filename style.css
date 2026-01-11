@@ -40,13 +40,14 @@ div[data-testid="stExpander"] {
   align-items: center; /* 水平中央 */
   text-align: center;
 }
+/* 
+/* /* エクスパンダーの中身（詳細部分）のテキストを中央寄せにする場合 */
+/* div[data-testid="stExpander"] .stMarkdown {
+/*   text-align: center;
+/* }
+/* 
 
-/* エクスパンダーの中身（詳細部分）のテキストを中央寄せにする場合 */
-div[data-testid="stExpander"] .stMarkdown {
-  text-align: center;
-}
-
-/* 1. 全てのカラム内コンテンツを上下中央・左右中央に配置 */
+ /* 1. 全てのカラム内コンテンツを上下中央・左右中央に配置 */
 [data-testid="column"] {
   display: flex;
   flex-direction: column;
