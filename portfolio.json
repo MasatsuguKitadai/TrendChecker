@@ -5,5 +5,12 @@
         "name": "ASAKA RIKEN CO LTD",
         "price": 0.0,
         "status": "watching"
+    },
+    {
+        "id": "1768174396.485875",
+        "ticker": "5724.T",
+        "name": "ASAKA RIKEN CO LTD",
+        "price": 3515.0,
+        "status": "holding"
     }
 ]
