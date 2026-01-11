@@ -15,18 +15,27 @@ from github import Github
 def check_password():
     if "password_correct" not in st.session_state:
         st.session_state.password_correct = False
+    
     if st.session_state.password_correct:
         return True
 
-    st.title("🔒 Trend Checker Login")
-    password_input = st.text_input("パスワードを入力してください", type="password")
-    
-    if st.button("ログイン", type="primary"):
-        if password_input == st.secrets["PASSWORD"]:
-            st.session_state.password_correct = True
-            st.rerun()
-        else:
-            st.error("パスワードが違います")
+    # プレースホルダー（空のコンテナ）を作成
+    login_area = st.empty()
+
+    with login_area.container():
+        st.title("🔒 Trend Checker Login")
+        password_input = st.text_input("Password", type="password")
+        
+        if st.button("Login", type="primary"):
+            if password_input == st.secrets["PASSWORD"]:
+                # 1. 認証フラグを立てる
+                st.session_state.password_correct = True
+                # 2. ログインUIを即座に消去（これで残像が消える）
+                login_area.empty()
+                # 3. リロードしてメイン画面へ
+                st.rerun()
+            else:
+                st.error("パスワードが違います")
     return False
 
 # ==========================================
@@ -34,18 +43,11 @@ def check_password():
 # ==========================================
 def load_data():
     """GitHubから最新のポートフォリオを読み込む"""
-    try:
-        g = Github(st.secrets["GITHUB_TOKEN"])
-        repo = g.get_user(st.secrets["GITHUB_USERNAME"]).get_repo(st.secrets["GITHUB_REPO_NAME"])
-        contents = repo.get_contents(st.secrets["DATA_FILE_PATH"])
-        data = json.loads(base64.b64decode(contents.content).decode("utf-8"))
-        return data
-    except Exception:
-        # 初回やエラー時は初期値を返す
-        return [
-            {"id": "init1", "ticker": "5724.T", "name": "アサカ理研", "price": 2633.0, "status": "holding"},
-            {"id": "init2", "ticker": "464A.T", "name": "QPS研究所", "price": 1670.0, "status": "holding"}
-        ]
+    g = Github(st.secrets["GITHUB_TOKEN"])
+    repo = g.get_user(st.secrets["GITHUB_USERNAME"]).get_repo(st.secrets["GITHUB_REPO_NAME"])
+    contents = repo.get_contents(st.secrets["DATA_FILE_PATH"])
+    data = json.loads(base64.b64decode(contents.content).decode("utf-8"))
+    return data
 
 def save_data(data):
     """ローカルとGitHubの両方に保存"""
@@ -100,7 +102,7 @@ def main():
         with open("style.css") as f:
             st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-    st.title("📈 Trend Checker Pro v4.5")
+    st.title("📈 Trend Checker Pro")
     
     # データロード
     if 'portfolio' not in st.session_state:
@@ -110,7 +112,7 @@ def main():
     with st.sidebar:
         st.header("⚙️ 銘柄登録")
         with st.form("entry_form", clear_on_submit=True):
-            new_ticker = st.text_input("銘柄コード (例: 4379.T)")
+            new_ticker = st.text_input("銘柄コード (例: 0000.T)")
             new_status = st.selectbox("カテゴリ", ["保有 (Exit監視)", "監視 (Entry判定)"])
             new_price = st.number_input("取得/目安単価", min_value=0.0)
             
@@ -145,28 +147,66 @@ def main():
                 "price": st.column_config.NumberColumn("単価", format="%.1f")
             }
         )
-        if st.button("変更をクラウドに保存"):
-            st.session_state.portfolio = edited_df.to_dict(orient="records")
-            save_data(st.session_state.portfolio)
-            st.rerun()
 
-        # バックアップ/復元
-        st.divider()
-        c_down, c_up = st.columns(2)
-        with c_down:
-            st.download_button("JSONバックアップ", json.dumps(st.session_state.portfolio), "portfolio_backup.json")
-        with c_up:
-            up_file = st.file_uploader("復元用JSON", type="json")
-            if up_file and st.button("復元実行"):
-                st.session_state.portfolio = json.load(up_file)
-                save_data(st.session_state.portfolio)
+        col_save, col_backup = st.columns([1, 1])
+        with col_save:
+            if st.button("変更を保存", use_container_width=True):
+                updated_data = json.loads(edited_df.to_json(orient="records"))
+                save_data(updated_data)
+                st.success("保存しました。")
                 st.rerun()
+        
+        # --- バックアップダウンロード機能 ---
+        with col_backup:
+            # ダウンロードボタン
+            st.download_button(
+                label="JSON形式でバックアップ",
+                data=json.dumps(st.session_state.portfolio, ensure_ascii=False, indent=4),
+                file_name=f"portfolio_backup_{datetime.now().strftime('%Y%m%d')}.json",
+                mime="application/json",
+                use_container_width=True,
+            )
+
+        st.markdown("### データの復元")
+        up_file = st.file_uploader("バックアップファイル(.json)を選択してください", type="json")
+        if up_file is not None:
+            # ファイルが選択された時だけ「復元実行」ボタンを表示
+            if st.button("このデータで復元（上書き）を実行する", type="primary", use_container_width=True):
+                try:
+                    st.session_state.portfolio = json.load(up_file)
+                    save_data(st.session_state.portfolio) # GitHubへ同期
+                    st.success("データの復元に成功しました！")
+                    time.sleep(1)
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"復元エラー: {e}")
 
     # --- メインコンテンツ：監視パネル ---
-    tab1, tab2 = st.tabs(["🚀 保有銘柄 (Exit監視)", "🔍 監視銘柄 (Entry判定)"])
+    tab1, tab2 = st.tabs(["🔍 監視銘柄 (Entry判定)","🚀 保有銘柄 (Exit監視)"])
 
-    # タブ1: 保有（アサカ理研、QPS研究所など）
+    # タブ1: 監視（豆蔵、テクノホライズンなど）
     with tab1:
+        watchings = [s for s in st.session_state.portfolio if s.get("status") == "watching"]
+        for s in watchings:
+            df = get_tech_data(s['ticker'])
+            if df is None: continue
+            rsi, curr = df['RSI'].iloc[-1], df['Close'].iloc[-1]
+            ma5, ma25 = df['MA5'].iloc[-1], df['MA25'].iloc[-1]
+            
+            score = 0
+            if rsi < 35: score += 50 
+            elif ma5 > ma25 and df['MA5'].iloc[-2] <= df['MA25'].iloc[-2]: score += 50
+            
+            with st.expander(f"【{s['ticker']}】{s['name']}", expanded=True):
+                c1, c2, c3, c4 = st.columns(4)
+                c1.metric("現在価格", f"{curr:,.1f}")
+                c2.metric("RSI(14)", f"{rsi:.1f}")
+                c3.metric("短期/長期MA", f"{ma5:,.0f}/{ma25:,.0f}")
+                if score >= 50: c4.success("🚀 買い時!!")
+                else: c4.info("💤 待機中")
+
+    # タブ2: 保有（アサカ理研、QPS研究所など）
+    with tab2:
         holdings = [s for s in st.session_state.portfolio if s.get("status") == "holding"]
         for s in holdings:
             df = get_tech_data(s['ticker'])
@@ -183,30 +223,11 @@ def main():
                 
                 # 判定
                 stop_v, trail_v = s['price']*(1-stop_pct), high*(1-trail_pct)
-                if curr <= stop_v: c4.error(f"🚨 損切り!!\n({stop_v:,.0f}円)")
+                if curr <= stop_v: c4.error(f"🚨 損切り\n({stop_v:,.0f}円)")
                 elif curr <= trail_v and curr > s['price']: c4.warning(f"💰 利確!!\n({trail_v:,.0f}円)")
                 else: c4.success("✅ ホールド")
 
-    # タブ2: 監視（豆蔵、テクノホライズンなど）
-    with tab2:
-        watchings = [s for s in st.session_state.portfolio if s.get("status") == "watching"]
-        for s in watchings:
-            df = get_tech_data(s['ticker'])
-            if df is None: continue
-            rsi, curr = df['RSI'].iloc[-1], df['Close'].iloc[-1]
-            ma5, ma25 = df['MA5'].iloc[-1], df['MA25'].iloc[-1]
-            
-            score = 0
-            if rsi < 35: score += 50 
-            elif ma5 > ma25 and df['MA5'].iloc[-2] <= df['MA25'].iloc[-2]: score += 50
-            
-            with st.expander(f"【{s['ticker']}】{s['name']} | スコア: {score}", expanded=True):
-                c1, c2, c3, c4 = st.columns(4)
-                c1.metric("現在価格", f"{curr:,.1f}")
-                c2.metric("RSI(14)", f"{rsi:.1f}")
-                c3.metric("短期/長期MA", f"{ma5:,.0f}/{ma25:,.0f}")
-                if score >= 50: c4.success("🚀 買い時!!")
-                else: c4.info("💤 待機中")
+
 
 if __name__ == "__main__":
     main()
