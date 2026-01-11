@@ -1,33 +1,5 @@
 [
     {
-        "id": "1736470001",
-        "ticker": "5724.T",
-        "name": "アサカ理研",
-        "price": 2633.0,
-        "status": "holding"
-    },
-    {
-        "id": "1736470002",
-        "ticker": "464A.T",
-        "name": "QPS研究所",
-        "price": 1670.0,
-        "status": "holding"
-    },
-    {
-        "id": "1736470003",
-        "ticker": "4379.T",
-        "name": "豆蔵デジタルHD",
-        "price": 0.0,
-        "status": "watching"
-    },
-    {
-        "id": "1736470004",
-        "ticker": "6629.T",
-        "name": "テクノホライズン",
-        "price": 0.0,
-        "status": "watching"
-    },
-    {
         "id": "1768052191.041934",
         "ticker": "5724.T",
         "name": "ASAKA RIKEN CO LTD",
