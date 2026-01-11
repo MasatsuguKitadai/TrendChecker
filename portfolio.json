@@ -1,5 +1,12 @@
 [
     {
+        "id": "1768052191.041934",
+        "ticker": "5724.T",
+        "name": "ASAKA RIKEN CO LTD",
+        "price": 0.0,
+        "status": "watching"
+    },
+    {
         "id": "1768174396.485875",
         "ticker": "5724.T",
         "name": "ASAKA RIKEN CO LTD",
@@ -10,7 +17,14 @@
         "id": "1768174449.404091",
         "ticker": "464A.T",
         "name": "QPS HOLDINGS INC",
-        "price": 1669.0,
+        "price": 1650.0,
         "status": "holding"
+    },
+    {
+        "id": "1768174548.522333",
+        "ticker": "6629.T",
+        "name": "TECHNO HORIZON CO LTD",
+        "price": 0.0,
+        "status": "watching"
     }
 ]
