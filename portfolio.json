@@ -26,5 +26,12 @@
         "name": "202A.T",
         "price": 0.0,
         "status": "watching"
+    },
+    {
+        "id": "1768347626.412486",
+        "ticker": "4011.T",
+        "name": "4011.T",
+        "price": 0.0,
+        "status": "watching"
     }
 ]
