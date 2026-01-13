@@ -19,5 +19,12 @@
         "name": "TECHNO HORIZON CO LTD",
         "price": 0.0,
         "status": "watching"
+    },
+    {
+        "id": "1768347497.61191",
+        "ticker": "202A.T",
+        "name": "202A.T",
+        "price": 0.0,
+        "status": "watching"
     }
 ]
