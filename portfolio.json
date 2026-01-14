@@ -19,26 +19,5 @@
         "name": "TECHNO HORIZON CO LTD",
         "price": 0.0,
         "status": "watching"
-    },
-    {
-        "id": "1768347497.61191",
-        "ticker": "202A.T",
-        "name": "202A.T",
-        "price": 0.0,
-        "status": "watching"
-    },
-    {
-        "id": "1768347626.412486",
-        "ticker": "4011.T",
-        "name": "4011.T",
-        "price": 0.0,
-        "status": "watching"
-    },
-    {
-        "id": "1768400332.94074",
-        "ticker": "202A.T",
-        "name": "MAMEZO CO LTD",
-        "price": 0.0,
-        "status": "holding"
     }
 ]
