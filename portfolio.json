@@ -22,5 +22,37 @@
         "price": 0.0,
         "status": "watching",
         "shares": 0.0
+    },
+    {
+        "id": "1768403444.298811",
+        "ticker": "4011.T",
+        "name": "ヘッドウォーター",
+        "price": 0.0,
+        "status": "watching",
+        "shares": 100.0
+    },
+    {
+        "id": "1768403549.904696",
+        "ticker": "202A.T",
+        "name": "豆蔵",
+        "price": 0.0,
+        "status": "watching",
+        "shares": 100.0
+    },
+    {
+        "id": "1768403689.874483",
+        "ticker": "6330.T",
+        "name": "東洋エンジニアリング",
+        "price": 0.0,
+        "status": "watching",
+        "shares": 100.0
+    },
+    {
+        "id": "1768403934.111767",
+        "ticker": "5885.T",
+        "name": "ジーデップアドバンス",
+        "price": 0.0,
+        "status": "watching",
+        "shares": 100.0
     }
 ]
