@@ -211,15 +211,15 @@ def main():
             elif ma5 > ma25 and df['MA5'].iloc[-2] <= df['MA25'].iloc[-2]: score += 50
             
             with st.expander(f"【 {s['ticker']} 】{s['name']} / スコア： {score}", expanded=True):
-                c1, c2, c3, c4 = st.columns(4)
+                c1, c2, c3= st.columns(3)
                 c1.metric("価格", f"{curr:,.1f}")
                 c2.metric("RSI", f"{rsi:.1f}")
                 c3.metric("MA 5/25", f"{ma5:,.0f}/{ma25:,.0f}")
                 
                 if score >= 50:
-                    c4.markdown('<div class="status-box status-success">🚀 買い時!!</div>', unsafe_allow_html=True)
+                    st.markdown('<div class="status-box status-success">🚀 買い時!!</div>', unsafe_allow_html=True)
                 else:
-                    c4.markdown('<div class="status-box status-info">💤 監視継続</div>', unsafe_allow_html=True)
+                    st.markdown('<div class="status-box status-info">💤 監視継続</div>', unsafe_allow_html=True)
                 
                 if st.button(f"保有へ移行", key=f"mov_{s['id']}"):
                     for p in st.session_state.portfolio:
