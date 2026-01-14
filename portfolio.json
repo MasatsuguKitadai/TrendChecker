@@ -60,7 +60,7 @@
         "ticker": "7453.T",
         "name": "7453.T",
         "price": 0.0,
-        "shares": 100,
-        "status": "watching"
+        "status": "watching",
+        "shares": 100.0
     }
 ]
