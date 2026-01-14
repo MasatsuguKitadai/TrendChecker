@@ -4,20 +4,39 @@
         "ticker": "5724.T",
         "name": "ASAKA RIKEN CO LTD",
         "price": 3515.0,
-        "status": "holding"
+        "status": "holding",
+        "shares": 100
     },
     {
         "id": "1768174449.404091",
         "ticker": "464A.T",
         "name": "QPS HOLDINGS INC",
         "price": 1669.0,
-        "status": "holding"
+        "status": "holding",
+        "shares": 200
     },
     {
         "id": "1768174548.522333",
         "ticker": "6629.T",
         "name": "TECHNO HORIZON CO LTD",
         "price": 0.0,
-        "status": "watching"
+        "status": "watching",
+        "shares": 0
+    },
+    {
+        "id": null,
+        "ticker": null,
+        "name": null,
+        "price": NaN,
+        "status": null,
+        "shares": null
+    },
+    {
+        "id": null,
+        "ticker": null,
+        "name": null,
+        "price": NaN,
+        "status": null,
+        "shares": null
     }
 ]
