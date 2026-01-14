@@ -54,5 +54,13 @@
         "price": 0.0,
         "status": "watching",
         "shares": 100.0
+    },
+    {
+        "id": "1768433775.736808",
+        "ticker": "7453.T",
+        "name": "7453.T",
+        "price": 0.0,
+        "shares": 100,
+        "status": "watching"
     }
 ]
