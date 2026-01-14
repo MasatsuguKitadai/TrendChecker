@@ -38,5 +38,13 @@
         "price": 0.0,
         "status": "watching",
         "shares": 100.0
+    },
+    {
+        "id": "1768403689.874483",
+        "ticker": "6330.T",
+        "name": "6330.T",
+        "price": 0.0,
+        "shares": 100,
+        "status": "watching"
     }
 ]
