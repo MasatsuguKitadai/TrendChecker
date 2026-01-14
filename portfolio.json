@@ -33,10 +33,10 @@
     },
     {
         "id": "1768403549.904696",
-        "ticker": "202A",
+        "ticker": "202A.T",
         "name": "202A",
         "price": 0.0,
-        "shares": 100,
-        "status": "watching"
+        "status": "watching",
+        "shares": 100.0
     }
 ]
