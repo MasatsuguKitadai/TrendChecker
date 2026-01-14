@@ -33,5 +33,12 @@
         "name": "4011.T",
         "price": 0.0,
         "status": "watching"
+    },
+    {
+        "id": "1768400332.94074",
+        "ticker": "202A.T",
+        "name": "MAMEZO CO LTD",
+        "price": 0.0,
+        "status": "holding"
     }
 ]
