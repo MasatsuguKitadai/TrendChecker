@@ -54,13 +54,5 @@
         "price": 0.0,
         "status": "watching",
         "shares": 100.0
-    },
-    {
-        "id": null,
-        "ticker": null,
-        "name": null,
-        "price": NaN,
-        "status": "watching",
-        "shares": NaN
     }
 ]
