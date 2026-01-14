@@ -52,7 +52,7 @@
         "ticker": "5885.T",
         "name": "ジーデップアドバンス",
         "price": 0.0,
-        "status": "holding",
+        "status": "watching",
         "shares": 100.0
     },
     {
