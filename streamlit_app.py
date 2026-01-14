@@ -175,7 +175,7 @@ def main():
             
             with st.expander(f"【 {s['ticker']} 】{s['name']} / 時価：{market_val:,.0f}円", expanded=True):
                 # カラム数を5に拡張
-                c1, c2, c3, c4, c5 = st.columns(5)
+                c1, c2, c3, c4 = st.columns(4)
                 c1.metric(" 取得単価", f"{s['price']:,.1f}")
                 c2.metric(" 現在価格", f"{curr:,.1f}", delta=f"{curr-s['price']:+.1f}")
                 c3.metric(" 持ち株数", f"{shares:,.0f} 株")
@@ -183,11 +183,11 @@ def main():
                 
                 # 判定エリア (c5)
                 if curr <= stop_v:
-                    c5.markdown(f'<div class="status-box status-error">🚨 損切り!! {profit_amt:+,.0f}円 {stop_v:,.0f}円)</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="status-box status-error">🚨 損切り!! {profit_amt:+,.0f}円 {stop_v:,.0f}円)</div>', unsafe_allow_html=True)
                 elif curr <= trail_v and curr > s['price']:
-                    c5.markdown(f'<div class="status-box status-warning">💰 利確!! {profit_amt:+,.0f}円 {profit_pct:+.1f}%</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="status-box status-warning">💰 利確!! {profit_amt:+,.0f}円 {profit_pct:+.1f}%</div>', unsafe_allow_html=True)
                 else:
-                    c5.markdown(f'<div class="status-box status-success">✅ ホールド {profit_amt:+,.0f}円 {profit_pct:+.1f}%</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="status-box status-success">✅ ホールド {profit_amt:+,.0f}円 {profit_pct:+.1f}%</div>', unsafe_allow_html=True)
                 
                 if rsi >= 80:
                     st.markdown(f'<div class="overheat-box">🔥 超過熱 (RSI：{rsi:.1f}) / 追撃買い厳禁</div>', unsafe_allow_html=True)

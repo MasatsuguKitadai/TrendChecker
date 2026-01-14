@@ -26,41 +26,28 @@
   width: 100%;
   padding: 12px 5px;
   border-radius: 8px;
-  font-size: 0.95rem;
-  line-height: 1.3;
-  transition: transform 0.2s;
+  margin-bottom: 15px;
+  text-align: center;
 }
 
 /* 🚨 損切り (Error) */
 .status-error {
-  height: 20px;
   background: #ff4b4b 50%;
-  text-align: center;
-  margin-bottom: 15px;
 }
 
 /* 💰 利確 (Warning) */
 .status-warning {
-  height: 40px;
   background: #f0932b 50%;
-  text-align: center;
-  margin-bottom: 15px;
 }
 
 /* ✅ ホールド / 🚀 買い時 (Success) */
 .status-success {
-  height: 40px;
   background: #28a745 50%;
-  text-align: center;
-  margin-bottom: 15px;
 }
 
 /* 💤 待機 (Info) */
 .status-info {
-  height: 40px;
   background: #17a2b8 50%;
-  text-align: center;
-  margin-bottom: 15px;
 }
 
 /* 過熱感アラート */
