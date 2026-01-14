@@ -46,5 +46,13 @@
         "price": 0.0,
         "status": "watching",
         "shares": 100.0
+    },
+    {
+        "id": "1768403934.111767",
+        "ticker": "5885.T",
+        "name": "5885.T",
+        "price": 0.0,
+        "shares": 100,
+        "status": "holding"
     }
 ]
