@@ -22,5 +22,13 @@
         "price": 0.0,
         "status": "watching",
         "shares": 0.0
+    },
+    {
+        "id": "1768403444.298811",
+        "ticker": "4011.T",
+        "name": "4011.T",
+        "price": 0.0,
+        "shares": 100,
+        "status": "watching"
     }
 ]
