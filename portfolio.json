@@ -28,7 +28,7 @@
         "ticker": "4011.T",
         "name": "4011.T",
         "price": 0.0,
-        "shares": 100,
-        "status": "watching"
+        "status": "watching",
+        "shares": 100.0
     }
 ]
