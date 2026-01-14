@@ -34,7 +34,7 @@
     {
         "id": "1768403549.904696",
         "ticker": "202A.T",
-        "name": "202A",
+        "name": "豆蔵",
         "price": 0.0,
         "status": "watching",
         "shares": 100.0
@@ -42,9 +42,9 @@
     {
         "id": "1768403689.874483",
         "ticker": "6330.T",
-        "name": "6330.T",
+        "name": "東洋エンジニアリング",
         "price": 0.0,
-        "shares": 100,
-        "status": "watching"
+        "status": "watching",
+        "shares": 100.0
     }
 ]
