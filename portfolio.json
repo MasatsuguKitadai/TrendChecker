@@ -30,5 +30,13 @@
         "price": 0.0,
         "status": "watching",
         "shares": 100.0
+    },
+    {
+        "id": "1768403549.904696",
+        "ticker": "202A",
+        "name": "202A",
+        "price": 0.0,
+        "shares": 100,
+        "status": "watching"
     }
 ]
