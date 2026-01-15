@@ -54,5 +54,15 @@
         "price": 0.0,
         "status": "watching",
         "shares": 100.0
+    },
+    {
+        "id": "1768458828.510057",
+        "ticker": "5724.T",
+        "name": "ASAKA RIKEN CO LTD",
+        "price": 0.0,
+        "shares": 100,
+        "status": "watching",
+        "custom_stop": null,
+        "custom_trail": null
     }
 ]
