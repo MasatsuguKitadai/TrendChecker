@@ -27,9 +27,9 @@
         "id": "1768403549.904696",
         "ticker": "202A.T",
         "name": "豆蔵",
-        "price": 0.0,
-        "status": "watching",
-        "shares": 100.0
+        "price": 3675.0,
+        "status": "holding",
+        "shares": 100
     },
     {
         "id": "1768403689.874483",
