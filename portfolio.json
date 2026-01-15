@@ -1,82 +1,88 @@
-[
-    {
-        "id": "1768174449.404091",
-        "ticker": "464A.T",
-        "name": "QPS HOLDINGS INC",
-        "price": 1669.0,
-        "status": "holding",
-        "shares": 200.0,
-        "custom_stop": null,
-        "custom_trail": null
-    },
-    {
-        "id": "1768174548.522333",
-        "ticker": "6629.T",
-        "name": "TECHNO HORIZON CO LTD",
-        "price": 0.0,
-        "status": "watching",
-        "shares": 0.0,
-        "custom_stop": null,
-        "custom_trail": null
-    },
-    {
-        "id": "1768403444.298811",
-        "ticker": "4011.T",
-        "name": "ヘッドウォーター",
-        "price": 0.0,
-        "status": "watching",
-        "shares": 100.0,
-        "custom_stop": null,
-        "custom_trail": null
-    },
-    {
-        "id": "1768403549.904696",
-        "ticker": "202A.T",
-        "name": "豆蔵",
-        "price": 3660.0,
-        "status": "holding",
-        "shares": 100.0,
-        "custom_stop": null,
-        "custom_trail": null
-    },
-    {
-        "id": "1768403689.874483",
-        "ticker": "6330.T",
-        "name": "東洋エンジニアリング",
-        "price": 0.0,
-        "status": "watching",
-        "shares": 100.0,
-        "custom_stop": null,
-        "custom_trail": null
-    },
-    {
-        "id": "1768403934.111767",
-        "ticker": "5885.T",
-        "name": "ジーデップアドバンス",
-        "price": 0.0,
-        "status": "watching",
-        "shares": 100.0,
-        "custom_stop": null,
-        "custom_trail": null
-    },
-    {
-        "id": "1768433775.736808",
-        "ticker": "7453.T",
-        "name": "良品計画",
-        "price": 0.0,
-        "status": "watching",
-        "shares": 100.0,
-        "custom_stop": null,
-        "custom_trail": null
-    },
-    {
-        "id": "1768458828.510057",
-        "ticker": "5724.T",
-        "name": "ASAKA RIKEN CO LTD",
-        "price": 0.0,
-        "status": "watching",
-        "shares": 100.0,
-        "custom_stop": null,
-        "custom_trail": null
+{
+    "portfolio": [
+        {
+            "id": "1768174449.404091",
+            "ticker": "464A.T",
+            "name": "QPS HOLDINGS INC",
+            "price": 1669.0,
+            "status": "holding",
+            "shares": 200.0,
+            "custom_stop": null,
+            "custom_trail": null
+        },
+        {
+            "id": "1768174548.522333",
+            "ticker": "6629.T",
+            "name": "TECHNO HORIZON CO LTD",
+            "price": 0.0,
+            "status": "watching",
+            "shares": 0.0,
+            "custom_stop": null,
+            "custom_trail": null
+        },
+        {
+            "id": "1768403444.298811",
+            "ticker": "4011.T",
+            "name": "ヘッドウォーター",
+            "price": 0.0,
+            "status": "watching",
+            "shares": 100.0,
+            "custom_stop": null,
+            "custom_trail": null
+        },
+        {
+            "id": "1768403549.904696",
+            "ticker": "202A.T",
+            "name": "豆蔵",
+            "price": 3660.0,
+            "status": "holding",
+            "shares": 100.0,
+            "custom_stop": null,
+            "custom_trail": null
+        },
+        {
+            "id": "1768403689.874483",
+            "ticker": "6330.T",
+            "name": "東洋エンジニアリング",
+            "price": 0.0,
+            "status": "watching",
+            "shares": 100.0,
+            "custom_stop": null,
+            "custom_trail": null
+        },
+        {
+            "id": "1768403934.111767",
+            "ticker": "5885.T",
+            "name": "ジーデップアドバンス",
+            "price": 0.0,
+            "status": "watching",
+            "shares": 100.0,
+            "custom_stop": null,
+            "custom_trail": null
+        },
+        {
+            "id": "1768433775.736808",
+            "ticker": "7453.T",
+            "name": "良品計画",
+            "price": 0.0,
+            "status": "watching",
+            "shares": 100.0,
+            "custom_stop": null,
+            "custom_trail": null
+        },
+        {
+            "id": "1768458828.510057",
+            "ticker": "5724.T",
+            "name": "ASAKA RIKEN CO LTD",
+            "price": 0.0,
+            "status": "watching",
+            "shares": 100.0,
+            "custom_stop": null,
+            "custom_trail": null
+        }
+    ],
+    "settings": {
+        "total_capital": 1400000,
+        "risk_per_trade": 2.0
     }
-]
+}
