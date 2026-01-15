@@ -79,6 +79,16 @@
             "shares": 100.0,
             "custom_stop": null,
             "custom_trail": null
+        },
+        {
+            "id": "1768490372.010455",
+            "ticker": "464A.T",
+            "name": "464A.T",
+            "price": 1705.0,
+            "shares": 200,
+            "status": "holding",
+            "custom_stop": null,
+            "custom_trail": null
         }
     ],
     "settings": {
