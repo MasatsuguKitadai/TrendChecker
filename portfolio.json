@@ -1,13 +1,5 @@
 [
     {
-        "id": "1768174396.485875",
-        "ticker": "5724.T",
-        "name": "ASAKA RIKEN CO LTD",
-        "price": 3515.0,
-        "status": "holding",
-        "shares": 100.0
-    },
-    {
         "id": "1768174449.404091",
         "ticker": "464A.T",
         "name": "QPS HOLDINGS INC",
