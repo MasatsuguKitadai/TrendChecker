@@ -79,16 +79,6 @@
             "shares": 100.0,
             "custom_stop": null,
             "custom_trail": null
-        },
-        {
-            "id": "1768490372.010455",
-            "ticker": "464A.T",
-            "name": "QPSHD",
-            "price": 1705.0,
-            "status": "holding",
-            "shares": 200.0,
-            "custom_stop": null,
-            "custom_trail": null
         }
     ],
     "settings": {
