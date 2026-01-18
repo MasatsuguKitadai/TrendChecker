@@ -79,6 +79,16 @@
             "shares": 100.0,
             "custom_stop": null,
             "custom_trail": null
+        },
+        {
+            "id": "1768779512.107452",
+            "ticker": "7777.T",
+            "name": "3-D MATRIX LTD",
+            "price": 0.0,
+            "shares": 1000,
+            "status": "watching",
+            "custom_stop": null,
+            "custom_trail": null
         }
     ],
     "settings": {
