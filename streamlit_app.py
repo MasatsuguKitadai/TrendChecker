@@ -121,7 +121,7 @@ def main():
         # モード切替UIの追加
         strategy_mode_jp = st.radio(
             "運用スタイル", 
-            ["短期トレード (Short)", "長期保有 (Long)"],
+            ["短期", "長期"],
             help="短期: 設定した％で機械的に売買\n長期: 利益が乗るほど逆指値を緩くし、MA75も参照"
         )
         # ロジックに渡す用の文字列変換
@@ -202,7 +202,7 @@ def main():
         if not current_holdings:
             st.info("保有銘柄がありません。")
         else:
-            st.markdown(f"### 📋 本日の逆指値注文ガイド ({strategy_mode_jp})")
+            st.markdown(f"### 📋 逆指値注文（{strategy_mode_jp}）")
             st.caption("朝、証券アプリで以下の「トリガー価格」に逆指値（成行売り）を設定してください。")
             
             guide_cols = st.columns(len(current_holdings) if len(current_holdings) < 4 else 4)
@@ -280,7 +280,7 @@ def main():
                         label_text = "✅ ホールド継続"
                         status_class = "status-success"
                         
-                    c5.markdown(f'<div class="status-box {status_class}">{label_text} ({final_line:,.0f}円)</div>', unsafe_allow_html=True)
+                    c5.markdown(f'<div class="status-box {status_class}">{label_text}：{final_line:,.0f}円</div>', unsafe_allow_html=True)
                     
                     if rsi >= 80:
                         st.markdown(f'<div class="overheat-box">🔥 超過熱 (RSI: {rsi:.1f}) | 追撃厳禁</div>', unsafe_allow_html=True)
@@ -295,7 +295,7 @@ def main():
         current_watchings = [s for s in st.session_state.data["portfolio"] if s.get("status") == "watching"]
         cash_pos = new_capital - total_market_value
         
-        st.markdown(f"#### 🏦 買付余力: {cash_pos:,.0f}円 / 総資産: {new_capital:,.0f}円")
+        st.markdown(f"#### 🏦 買付余力: {cash_pos:,.0f}円")
         
         if not current_watchings:
             st.info("監視中の銘柄はありません。サイドバーから追加してください。")
@@ -329,9 +329,9 @@ def main():
                     c4.markdown('<div class="status-box status-info">💤 監視中</div>', unsafe_allow_html=True)
                 
                 if reasons:
-                    st.caption(f"加点要因: {', '.join(reasons)}")
+                    st.caption(f"加点要因：{', '.join(reasons)}")
                 
-                st.info(f"💡 推奨買付株数: **{rec_shares:,}株** (損切幅: -{dist:,.0f}円/株)")
+                st.info(f"💡 推奨買付株数：**{rec_shares:,}株** (損切幅: -{dist:,.0f}円/株)")
                 
                 col_act1, col_act2 = st.columns(2)
                 with col_act1:
