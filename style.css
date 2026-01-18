@@ -14,12 +14,14 @@
 
 /* メトリクス（数値表示）のカードデザイン */
 [data-testid="stMetric"] {
+  height: 126px;
   padding: 10px !important;
   border: #444 solid 1px;
   border-radius: 10px;
   background-color: #1e1e1e;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   width: 100%;
+  text-align: center;
 }
 
 /* =========================================
