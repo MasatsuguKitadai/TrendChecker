@@ -4,17 +4,16 @@ import pandas as pd
 import json
 import base64
 import os
-import math # 残しておいても良いがlogic側に移動済みなら不要な場合も
 from datetime import datetime
 from github import Github
 
-# 新しいロジックファイルをインポート
+# ロジックファイルをインポート
 import logic 
 
 # ==========================================
-# 0. 基本設定 & ロジック関数
+# 0. 基本設定
 # ==========================================
-st.set_page_config(page_title="Trend Checker Pro v5.5", layout="wide")
+st.set_page_config(page_title="Trend Checker Pro v6.0", layout="wide")
 
 def load_css(file_name):
     """CSSファイルを読み込んで適用する"""
@@ -22,15 +21,10 @@ def load_css(file_name):
         with open(file_name) as f:
             st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-# calculate_exit_strategy は logic.py に移動したため削除
-
 # ==========================================
 # 1. 認証 & GitHub同期
 # ==========================================
-# ... (check_password, sync_github, fetch_stock_name は変更なし) ...
-
 def check_password():
-    # ... (変更なし) ...
     if "password_correct" not in st.session_state:
         st.session_state.password_correct = False
     
@@ -41,7 +35,7 @@ def check_password():
     with login_area.container():
         st.markdown('<div class="login-container">', unsafe_allow_html=True)
         st.title("🔒 Trend Checker Pro")
-        st.write("Mechanical Trading Engine v5.5")
+        st.write("Mechanical Trading Engine v6.0")
         password_input = st.text_input("Password", type="password")
         if st.button("Login", type="primary", use_container_width=True):
             if password_input == st.secrets["PASSWORD"]:
@@ -54,7 +48,6 @@ def check_password():
     return False
 
 def sync_github(data=None, action="load"):
-    # ... (変更なし) ...
     GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
     REPO_NAME = f"{st.secrets['GITHUB_USERNAME']}/{st.secrets['GITHUB_REPO_NAME']}"
     FILE_PATH = st.secrets["DATA_FILE_PATH"]
@@ -98,11 +91,11 @@ def fetch_stock_name(ticker):
 @st.cache_data(ttl=3600)
 def get_technical_analysis(ticker):
     try:
-        # データ取得のみを担当
-        df = yf.Ticker(ticker).history(period="60d")
+        # 長期判定(MA75など)のために期間を2年(2y)に延長
+        df = yf.Ticker(ticker).history(period="2y")
         if df.empty: return None
         
-        # 計算は logic.py に任せる
+        # logic.py で指標計算
         df = logic.add_technical_indicators(df)
         return df
     except: return None
@@ -111,7 +104,7 @@ def get_technical_analysis(ticker):
 # 2. メインアプリケーション
 # ==========================================
 def main():
-    # if not check_password(): return
+    if not check_password(): return
     load_css("style.css")
     
     if 'data' not in st.session_state:
@@ -120,11 +113,21 @@ def main():
     data = st.session_state.data
     settings = data.get("settings", {"total_capital": 1000000, "risk_per_trade": 2.0})
 
-    st.title("📈 Trend Checker Pro v5.5")
+    st.title("📈 Trend Checker Pro v6.0")
 
     # --- サイドバー ---
-    # ... (変更なし) ...
     with st.sidebar:
+        st.header("⚙️ 戦略モード設定")
+        # モード切替UIの追加
+        strategy_mode_jp = st.radio(
+            "運用スタイル", 
+            ["短期トレード (Short)", "長期保有 (Long)"],
+            help="短期: 設定した％で機械的に売買\n長期: 利益が乗るほど逆指値を緩くし、MA75も参照"
+        )
+        # ロジックに渡す用の文字列変換
+        strategy_mode = "short" if "Short" in strategy_mode_jp else "long"
+
+        st.divider()
         st.header("💰 資金管理設定")
         new_capital = st.number_input("総投資資金 (円)", value=int(settings.get("total_capital", 1000000)), step=100000)
         new_risk = st.slider("1トレード許容リスク (%)", 0.5, 5.0, float(settings.get("risk_per_trade", 2.0)))
@@ -135,9 +138,10 @@ def main():
             st.rerun()
             
         st.divider()
-        st.header("⚙️ 機械的ルール")
-        default_stop_pct = st.sidebar.slider("損切り基準 (%)", 1, 15, 5) / 100
-        default_trail_pct = st.sidebar.slider("利確トレール (%)", 1, 20, 10) / 100
+        st.header("🔧 パラメータ微調整")
+        st.caption("※短期モードおよび長期モードの初期段階で使用")
+        default_stop_pct = st.slider("損切り基準 (%)", 1, 15, 5) / 100
+        default_trail_pct = st.slider("利確トレール (%)", 1, 20, 10) / 100
         
         st.divider()
         st.header("➕ 銘柄追加")
@@ -161,8 +165,7 @@ def main():
 
         st.divider()
         st.header("📂 データインポート")
-        uploaded_file = st.file_uploader("JSONファイルをアップロード", type=["json"], help="portfolio.jsonをアップロードして一括更新します")
-        
+        uploaded_file = st.file_uploader("JSONファイルをアップロード", type=["json"])
         if uploaded_file is not None:
             try:
                 import_data = json.load(uploaded_file)
@@ -173,13 +176,11 @@ def main():
                     if "settings" in import_data:
                         st.session_state.data["settings"] = import_data["settings"]
                 sync_github(st.session_state.data, action="save")
-                st.success("インポート完了！")
                 st.rerun()
             except Exception as e:
                 st.error(f"読み込みエラー: {e}")
 
     # --- データエディタ ---
-    # ... (変更なし) ...
     with st.expander("🛠️ ポートフォリオ一括管理 (JSON編集)", expanded=False):
         df_editor = pd.DataFrame(st.session_state.data["portfolio"])
         for col in ['shares', 'custom_stop', 'custom_trail']:
@@ -201,7 +202,7 @@ def main():
         if not current_holdings:
             st.info("保有銘柄がありません。")
         else:
-            st.markdown("### 📋 本日の逆指値注文ガイド")
+            st.markdown(f"### 📋 本日の逆指値注文ガイド ({strategy_mode_jp})")
             st.caption("朝、証券アプリで以下の「トリガー価格」に逆指値（成行売り）を設定してください。")
             
             guide_cols = st.columns(len(current_holdings) if len(current_holdings) < 4 else 4)
@@ -210,16 +211,17 @@ def main():
                 df = get_technical_analysis(s['ticker'])
                 if df is None: continue
                 
-                curr, high = df['Close'].iloc[-1], df['High'].max()
+                # logic.py の新しい関数引数に対応 (ma75も取得)
+                curr, high, rsi, ma75 = logic.get_latest_metrics(df, s['price'], s['id'])
                 
                 p_stop = s.get('custom_stop')
                 p_trail = s.get('custom_trail')
                 applied_stop = (p_stop / 100) if (pd.notnull(p_stop) and p_stop > 0) else default_stop_pct
                 applied_trail = (p_trail / 100) if (pd.notnull(p_trail) and p_trail > 0) else default_trail_pct
                 
-                # --- ロジック呼び出し変更 ---
+                # --- ロジック呼び出し（モード指定を追加） ---
                 strategy = logic.calculate_exit_strategy(
-                    s['price'], curr, high, applied_stop, applied_trail
+                    s['price'], curr, high, ma75, applied_stop, applied_trail, mode=strategy_mode
                 )
                 
                 card_class = "bg-emergency" if strategy['is_emergency'] else ("bg-safe" if strategy['profit_pct'] > 5 else "bg-normal")
@@ -251,26 +253,28 @@ def main():
             for s in current_holdings:
                 df = get_technical_analysis(s['ticker'])
                 if df is None: continue
-                curr, high, rsi = logic.get_latest_metrics(df, s['price'], s['id'])
+                
+                curr, high, rsi, ma75 = logic.get_latest_metrics(df, s['price'], s['id'])
                 
                 p_stop = s.get('custom_stop')
                 p_trail = s.get('custom_trail')
                 applied_stop = (p_stop / 100) if (pd.notnull(p_stop) and p_stop > 0) else default_stop_pct
                 applied_trail = (p_trail / 100) if (pd.notnull(p_trail) and p_trail > 0) else default_trail_pct
                 
-                # --- ロジック呼び出し変更 ---
-                strategy = logic.calculate_exit_strategy(s['price'], curr, high, applied_stop, applied_trail)
+                strategy = logic.calculate_exit_strategy(
+                    s['price'], curr, high, ma75, applied_stop, applied_trail, mode=strategy_mode
+                )
                 final_line = strategy['raw_line']
                 
                 with st.expander(f"【{s['ticker']}】{s.get('name', '')}", expanded=True):
                     c1, c2, c3, c4, c5 = st.columns(5)
                     c1.metric("取得単価", f"{s['price']:,.1f}")
                     c2.metric("現在価格", f"{curr:,.1f}", delta=f"{curr-s['price']:+.1f}")
-                    c3.metric("株数 / 評価額", f"{s.get('shares', 0):,.0f}", f"{curr * s.get('shares', 0):,.0f}円")
-                    c4.metric("60日最高値", f"{high:,.1f}")
+                    c3.metric("評価額", f"{curr * s.get('shares', 0):,.0f}円")
+                    c4.metric("期間最高値", f"{high:,.1f}")
                     
                     if curr <= final_line:
-                        label_text = "🚨 撤退ライン通過" if strategy['profit_pct'] <= 5.0 else "💰 利確ライン通過"
+                        label_text = "🚨 撤退ライン通過"
                         status_class = "status-error"
                     else:
                         label_text = "✅ ホールド継続"
@@ -300,16 +304,14 @@ def main():
             df = get_technical_analysis(s['ticker'])
             if df is None: continue
             
+            # Entryはモードに関係なく同一ロジックを使用
             curr = df['Close'].iloc[-1]
             rsi = df['RSI'].iloc[-1]
             vol_curr = df['Volume'].iloc[-1]
             vol_ma5 = df['VolMA5'].iloc[-1]
             
-            # --- ロジック呼び出し変更 ---
-            # Entry判定（スコアリング）
             score, reasons = logic.analyze_entry_strategy(df)
             
-            # 株数計算（資金管理）
             rec_shares = logic.calculate_position_size(
                 new_capital, new_risk, curr, default_stop_pct
             )
@@ -326,7 +328,6 @@ def main():
                 else:
                     c4.markdown('<div class="status-box status-info">💤 監視中</div>', unsafe_allow_html=True)
                 
-                # スコアの詳細理由を表示してもいいかもしれません
                 if reasons:
                     st.caption(f"加点要因: {', '.join(reasons)}")
                 
