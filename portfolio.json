@@ -21,16 +21,6 @@
             "custom_trail": null
         },
         {
-            "id": "1768403689.874483",
-            "ticker": "6330.T",
-            "name": "東洋エンジニアリング",
-            "price": 0.0,
-            "status": "watching",
-            "shares": 100.0,
-            "custom_stop": null,
-            "custom_trail": null
-        },
-        {
             "id": "1768403934.111767",
             "ticker": "5885.T",
             "name": "ジーデップアドバンス",
