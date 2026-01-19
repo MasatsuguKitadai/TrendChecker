@@ -115,7 +115,7 @@
             "ticker": "6330.T",
             "name": "TOYO ENGINEERING CORP",
             "price": 0.0,
-            "status": "holding",
+            "status": "watching",
             "shares": 100.0,
             "custom_stop": null,
             "custom_trail": null
