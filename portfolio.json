@@ -41,16 +41,6 @@
             "custom_trail": null
         },
         {
-            "id": "1768433775.736808",
-            "ticker": "7453.T",
-            "name": "良品計画",
-            "price": 3135.0,
-            "status": "holding",
-            "shares": 100,
-            "custom_stop": null,
-            "custom_trail": null
-        },
-        {
             "id": "1768458828.510057",
             "ticker": "5724.T",
             "name": "ASAKA RIKEN CO LTD",
