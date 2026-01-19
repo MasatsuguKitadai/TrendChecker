@@ -85,8 +85,8 @@
             "ticker": "3036.T",
             "name": "ALCONIX CORPORATION",
             "price": 0.0,
-            "shares": 100,
             "status": "watching",
+            "shares": 100.0,
             "custom_stop": null,
             "custom_trail": null
         },
@@ -95,8 +95,8 @@
             "ticker": "186A.T",
             "name": "ASTROSCALE HOLDINGS INC",
             "price": 0.0,
-            "shares": 100,
             "status": "watching",
+            "shares": 100.0,
             "custom_stop": null,
             "custom_trail": null
         },
@@ -105,8 +105,8 @@
             "ticker": "290A.T",
             "name": "SYNSPECTIVE INC",
             "price": 0.0,
-            "shares": 100,
             "status": "watching",
+            "shares": 100.0,
             "custom_stop": null,
             "custom_trail": null
         }
