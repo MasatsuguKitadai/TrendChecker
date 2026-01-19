@@ -109,6 +109,16 @@
             "shares": 100.0,
             "custom_stop": null,
             "custom_trail": null
+        },
+        {
+            "id": "1768865992.742718",
+            "ticker": "4011.T",
+            "name": "HEADWATERS CO LTD",
+            "price": 0.0,
+            "shares": 100,
+            "status": "watching",
+            "custom_stop": null,
+            "custom_trail": null
         }
     ],
     "settings": {
