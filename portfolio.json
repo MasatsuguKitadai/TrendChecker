@@ -81,16 +81,6 @@
             "custom_trail": null
         },
         {
-            "id": "1768834893.910884",
-            "ticker": "464A.T",
-            "name": "QPS HOLDINGS INC",
-            "price": 1850.0,
-            "status": "holding",
-            "shares": 200.0,
-            "custom_stop": null,
-            "custom_trail": null
-        },
-        {
             "id": "1768835256.191639",
             "ticker": "3036.T",
             "name": "ALCONIX CORPORATION",
