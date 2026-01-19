@@ -109,6 +109,16 @@
             "status": "watching",
             "custom_stop": null,
             "custom_trail": null
+        },
+        {
+            "id": "1768835652.111902",
+            "ticker": "290A.T",
+            "name": "SYNSPECTIVE INC",
+            "price": 0.0,
+            "shares": 100,
+            "status": "watching",
+            "custom_stop": null,
+            "custom_trail": null
         }
     ],
     "settings": {
