@@ -21,16 +21,6 @@
             "custom_trail": null
         },
         {
-            "id": "1768403549.904696",
-            "ticker": "202A.T",
-            "name": "豆蔵",
-            "price": 3623.0,
-            "status": "holding",
-            "shares": 100.0,
-            "custom_stop": null,
-            "custom_trail": null
-        },
-        {
             "id": "1768403689.874483",
             "ticker": "6330.T",
             "name": "東洋エンジニアリング",
