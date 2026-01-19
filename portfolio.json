@@ -119,6 +119,16 @@
             "status": "watching",
             "custom_stop": null,
             "custom_trail": null
+        },
+        {
+            "id": "1768866021.422238",
+            "ticker": "5885.T",
+            "name": "GDEP ADVANCE INC",
+            "price": 0.0,
+            "shares": 100,
+            "status": "watching",
+            "custom_stop": null,
+            "custom_trail": null
         }
     ],
     "settings": {
