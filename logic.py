@@ -82,17 +82,17 @@ def calculate_exit_strategy(price_buy, price_curr, price_high, ma75, stop_pct, t
         
         if profit_pct < 10.0:
             # Zone 1: 含み益10%未満 -> 「短期モード」と同じ厳戒態勢
-            label = "長期:育成中(厳格)"
+            label = "長期：育成中"
             used_trail_pct = trail_pct # 設定値(例:10%)そのまま
             
         elif 10.0 <= profit_pct < 30.0:
             # Zone 2: 含み益10-30% -> トレールを15%に広げて様子見
-            label = "長期:安定期(トレール15%)"
+            label = "長期：安定期(トレール15%)"
             used_trail_pct = 0.15 
             
         else:
             # Zone 3: 含み益30%超 -> トレール20% ＆ MA75サポート
-            label = "長期:収穫期(MA75/20%)"
+            label = "長期：収穫期(MA75/20%)"
             used_trail_pct = 0.20
     else:
         # 【短期モード】

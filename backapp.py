@@ -122,7 +122,7 @@ def main():
         strategy_mode_jp = st.radio(
             "運用スタイル", 
             ["短期", "長期"],
-            help="短期：設定した％で機械的に売買\n長期：利益が乗るほど逆指値を緩くし、MA75も参照"
+            help="短期: 設定した％で機械的に売買\n長期: 利益が乗るほど逆指値を緩くし、MA75も参照"
         )
         # ロジックに渡す用の文字列変換
         strategy_mode = "short" if "Short" in strategy_mode_jp else "long"
@@ -202,11 +202,10 @@ def main():
         if not current_holdings:
             st.info("保有銘柄がありません。")
         else:
-            st.markdown(f"### 📋 逆指値注文")
-            st.caption("証券アプリで以下の逆指値（成行売）を設定してください。")
+            st.markdown(f"### 📋 逆指値注文（{strategy_mode_jp}）")
+            st.caption("朝、証券アプリで以下の「トリガー価格」に逆指値（成行売り）を設定してください。")
             
-          # 3列グリッドで表示
-            cols = st.columns(len(current_holdings) if len(current_holdings) < 3 else 3)
+            guide_cols = st.columns(len(current_holdings) if len(current_holdings) < 4 else 4)
             
             for idx, s in enumerate(current_holdings):
                 df = get_technical_analysis(s['ticker'])
@@ -220,19 +219,15 @@ def main():
                 applied_stop = (p_stop / 100) if (pd.notnull(p_stop) and p_stop > 0) else default_stop_pct
                 applied_trail = (p_trail / 100) if (pd.notnull(p_trail) and p_trail > 0) else default_trail_pct
                 
-                # --- ロジック呼び出し ---
+                # --- ロジック呼び出し（モード指定を追加） ---
                 strategy = logic.calculate_exit_strategy(
                     s['price'], curr, high, ma75, applied_stop, applied_trail, mode=strategy_mode
                 )
                 
                 card_class = "bg-emergency" if strategy['is_emergency'] else ("bg-safe" if strategy['profit_pct'] > 5 else "bg-normal")
                 label_class = "card-label-red" if strategy['is_emergency'] else "card-label-green"
-
-                # 損益額の計算
-                unrealized_pl = (curr - s['price']) * s.get('shares', 0)
-                pl_color = "#2ecc71" if unrealized_pl < 0 else "#ff4b4b" # プラスなら緑、マイナスなら赤（提示コード準拠）
                 
-                with cols[idx % 3]:
+                with guide_cols[idx % 4]:
                     st.markdown(f"""
                     <div class="guide-card {card_class}">
                         <div class="card-header">
@@ -244,97 +239,103 @@ def main():
                             {strategy['order_price']:,.0f} <span class="card-price-unit">円以下で売</span>
                         </div>
                         <div class="card-footer">
-                            <div>建値：{s['price']:,.0f}</div>
-                            <div>現在：{curr:,.0f}</div>
-                            <div style="color:{pl_color}; font-weight:bold;">
-                                損益: {unrealized_pl:+,.0f} 円 ({strategy['profit_pct']:+.1f}%)
-                            </div>
-                            <div>期間高値：{high:,.0f} 円</div>
-                            <div>保有株数：{s.get('shares', 0)} 株</div>
+                            建値: {s['price']:,.0f}円<br>
+                            現在: {curr:,.1f} ({strategy['profit_pct']:+.1f}%)
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
+                
+                total_market_value += (curr * s.get('shares', 0))
+
+            st.divider()
+
+            # 詳細リスト
+            for s in current_holdings:
+                df = get_technical_analysis(s['ticker'])
+                if df is None: continue
+                
+                curr, high, rsi, ma75 = logic.get_latest_metrics(df, s['price'], s['id'])
+                
+                p_stop = s.get('custom_stop')
+                p_trail = s.get('custom_trail')
+                applied_stop = (p_stop / 100) if (pd.notnull(p_stop) and p_stop > 0) else default_stop_pct
+                applied_trail = (p_trail / 100) if (pd.notnull(p_trail) and p_trail > 0) else default_trail_pct
+                
+                strategy = logic.calculate_exit_strategy(
+                    s['price'], curr, high, ma75, applied_stop, applied_trail, mode=strategy_mode
+                )
+                final_line = strategy['raw_line']
+                
+                with st.expander(f"【{s['ticker']}】{s.get('name', '')}", expanded=True):
+                    c1, c2, c3, c4= st.columns(4)
+                    c1.metric("取得単価", f"{s['price']:,.1f}")
+                    c2.metric("現在価格", f"{curr:,.1f}", delta=f"{curr-s['price']:+.1f}")
+                    c3.metric("評価額", f"{curr * s.get('shares', 0):,.0f}円")
+                    c4.metric("期間最高値", f"{high:,.1f}")
                     
-                    # 削除ボタンを追加
-                    if  st.button("削除", key=f"del_{s['id']}", use_container_width=True):
+                    if curr <= final_line:
+                        label_text = "🚨 撤退ライン通過"
+                        status_class = "status-error"
+                    else:
+                        label_text = "✅ ホールド継続"
+                        status_class = "status-success"
+                        
+                    st.markdown(f'<div class="status-box {status_class}">{label_text}：{final_line:,.0f}円</div>', unsafe_allow_html=True)
+                    
+                    if rsi >= 80:
+                        st.markdown(f'<div class="overheat-box">🔥 超過熱 (RSI: {rsi:.1f}) | 追撃厳禁</div>', unsafe_allow_html=True)
+
+                    if st.button("銘柄を削除", key=f"del_{s['id']}"):
                         st.session_state.data["portfolio"] = [x for x in st.session_state.data["portfolio"] if x['id'] != s['id']]
                         sync_github(st.session_state.data, action="save")
                         st.rerun()
-            
-                total_market_value += (curr * s.get('shares', 0))
 
     # --- タブ2: 監視銘柄 ---
     with tab2:
         current_watchings = [s for s in st.session_state.data["portfolio"] if s.get("status") == "watching"]
-        # 現金余力の計算（全保有株の現在評価額を引いたもの）
-        current_holdings_value = sum([
-            logic.get_latest_metrics(get_technical_analysis(h['ticker']), h['price'], h['id'])[0] * h.get('shares', 0)
-            for h in st.session_state.data["portfolio"] if h.get("status") == "holding" and get_technical_analysis(h['ticker']) is not None
-        ])
-        cash_pos = settings.get("total_capital", 1000000) - current_holdings_value
+        cash_pos = new_capital - total_market_value
         
-        st.markdown(f"### 🏦 買付余力: {cash_pos:,.0f}円")
-        st.caption("スコア50点以上で買い")
+        st.markdown(f"#### 🏦 買付余力: {cash_pos:,.0f}円")
         
         if not current_watchings:
             st.info("監視中の銘柄はありません。サイドバーから追加してください。")
-        else:
-            # 3列グリッド
-            cols = st.columns(len(current_watchings) if len(current_watchings) < 3 else 3)
 
-            for idx, s in enumerate(current_watchings):
-                df = get_technical_analysis(s['ticker'])
-                if df is None: continue
+        for s in current_watchings:
+            df = get_technical_analysis(s['ticker'])
+            if df is None: continue
+            
+            # Entryはモードに関係なく同一ロジックを使用
+            curr = df['Close'].iloc[-1]
+            rsi = df['RSI'].iloc[-1]
+            vol_curr = df['Volume'].iloc[-1]
+            vol_ma5 = df['VolMA5'].iloc[-1]
+            
+            score, reasons = logic.analyze_entry_strategy(df)
+            
+            rec_shares = logic.calculate_position_size(
+                new_capital, new_risk, curr, default_stop_pct
+            )
+            dist = curr * default_stop_pct
+            
+            with st.expander(f"【{s['ticker']}】{s.get('name', '')} | スコア：{score}点", expanded=True):
+                c1, c2, c3, c4 = st.columns(4)
+                c1.metric("価格", f"{curr:,.1f}")
+                c2.metric("RSI", f"{rsi:.1f}")
+                c3.metric("出来高比", f"{vol_curr/vol_ma5:.1f}倍" if vol_ma5 > 0 else "0")
                 
-                # Entry用データ取得
-                curr = df['Close'].iloc[-1]
-                rsi = df['RSI'].iloc[-1]
-                vol_curr = df['Volume'].iloc[-1]
-                vol_ma5 = df['VolMA5'].iloc[-1]
-                vol_ratio = vol_curr / vol_ma5 if vol_ma5 > 0 else 0
+                if score >= 50:
+                    c4.markdown('<div class="status-box status-success">🚀 買い時!!</div>', unsafe_allow_html=True)
+                else:
+                    c4.markdown('<div class="status-box status-info">💤 監視中</div>', unsafe_allow_html=True)
                 
-                # ロジック判定
-                score, reasons = logic.analyze_entry_strategy(df)
+                if reasons:
+                    st.caption(f"加点要因：{', '.join(reasons)}")
                 
-                # 資金管理からの推奨株数算出
-                rec_shares = logic.calculate_position_size(
-                    settings.get("total_capital", 1000000), 
-                    settings.get("risk_per_trade", 2.0), 
-                    curr, 
-                    default_stop_pct
-                )
+                st.info(f"💡 推奨買付株数：**{rec_shares:,}株** (損切幅: -{dist:,.0f}円/株)")
                 
-                # デザイン判定
-                is_buy_signal = score >= 50
-                card_class = "bg-safe" if is_buy_signal else "bg-normal" # 買い時は緑、それ以外は通常
-                label_text = f"🚀 買い時：{score}点" if is_buy_signal else f"💤 監視中：{score}点"
-                label_class = "card-label-green" if is_buy_signal else "card-label-gray" # card-label-grayはCSSになければ白文字になります
-                
-                # 加点理由のテキスト化
-                reason_text = ", ".join(reasons) if reasons else "特になし"
-
-                with cols[idx % 3]:
-                    st.markdown(f"""
-                    <div class="guide-card {card_class}">
-                        <div class="card-header">
-                            <span class="card-ticker">{s['ticker']}</span>
-                            <span class="{label_class}">{label_text}</span>
-                        </div>
-                        <div class="card-name">{s.get('name', s['ticker'])}</div>
-                        <div class="card-price-area">
-                            {curr:,.0f} <span class="card-price-unit">円</span>
-                        </div>
-                        <div class="card-footer">
-                            <div>RSI：{rsi:.1f}</div>
-                            <div>出来高倍率：{vol_ratio:.1f}倍</div>
-                            <div style="font-size: 0.7rem; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                要因：{reason_text}
-                            </div>
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
-
-                    if st.button("保有へ", key=f"mov_{s['id']}", use_container_width=True):
+                col_act1, col_act2 = st.columns(2)
+                with col_act1:
+                    if st.button("保有へ移行", key=f"mov_{s['id']}", use_container_width=True):
                         for p in st.session_state.data["portfolio"]:
                             if p['id'] == s['id']:
                                 p['status'] = 'holding'
@@ -342,7 +343,11 @@ def main():
                                 p['shares'] = rec_shares
                         sync_github(st.session_state.data, action="save")
                         st.rerun()
-
+                with col_act2:
+                    if st.button("削除", key=f"del_w_{s['id']}", use_container_width=True):
+                        st.session_state.data["portfolio"] = [x for x in st.session_state.data["portfolio"] if x['id'] != s['id']]
+                        sync_github(st.session_state.data, action="save")
+                        st.rerun()
 
 if __name__ == "__main__":
     main()
