@@ -65,8 +65,8 @@
             "ticker": "6629.T",
             "name": "TECHNO HORIZON CO LTD",
             "price": 0.0,
-            "shares": 100,
             "status": "watching",
+            "shares": 100.0,
             "custom_stop": null,
             "custom_trail": null
         },
@@ -75,8 +75,8 @@
             "ticker": "202A.T",
             "name": "MAMEZO CO LTD",
             "price": 3623.0,
-            "shares": 100,
             "status": "holding",
+            "shares": 100.0,
             "custom_stop": null,
             "custom_trail": null
         },
@@ -85,8 +85,8 @@
             "ticker": "7777.T",
             "name": "3-D MATRIX LTD",
             "price": 480.0,
-            "shares": 500,
             "status": "holding",
+            "shares": 500.0,
             "custom_stop": null,
             "custom_trail": null
         },
@@ -95,18 +95,8 @@
             "ticker": "464A.T",
             "name": "QPS HOLDINGS INC",
             "price": 1850.0,
-            "shares": 200,
             "status": "holding",
-            "custom_stop": null,
-            "custom_trail": null
-        },
-        {
-            "id": "1768834638.967902",
-            "ticker": "464A.T",
-            "name": "QPS HOLDINGS INC",
-            "price": 1850.0,
-            "shares": 200,
-            "status": "holding",
+            "shares": 200.0,
             "custom_stop": null,
             "custom_trail": null
         }
