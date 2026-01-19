@@ -79,6 +79,16 @@
             "status": "watching",
             "custom_stop": null,
             "custom_trail": null
+        },
+        {
+            "id": "1768834435.513159",
+            "ticker": "202A.T",
+            "name": "MAMEZO CO LTD",
+            "price": 3623.0,
+            "shares": 100,
+            "status": "holding",
+            "custom_stop": null,
+            "custom_trail": null
         }
     ],
     "settings": {
