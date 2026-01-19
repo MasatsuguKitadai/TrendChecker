@@ -11,16 +11,6 @@
             "custom_trail": null
         },
         {
-            "id": "1768174548.522333",
-            "ticker": "6629.T",
-            "name": "TECHNO HORIZON CO LTD",
-            "price": 1150.0,
-            "status": "holding",
-            "shares": 400,
-            "custom_stop": null,
-            "custom_trail": null
-        },
-        {
             "id": "1768403444.298811",
             "ticker": "4011.T",
             "name": "ヘッドウォーター",
