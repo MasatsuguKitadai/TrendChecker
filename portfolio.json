@@ -89,6 +89,16 @@
             "shares": 200.0,
             "custom_stop": null,
             "custom_trail": null
+        },
+        {
+            "id": "1768835256.191639",
+            "ticker": "3036.T",
+            "name": "ALCONIX CORPORATION",
+            "price": 0.0,
+            "shares": 100,
+            "status": "watching",
+            "custom_stop": null,
+            "custom_trail": null
         }
     ],
     "settings": {
