@@ -11,26 +11,6 @@
             "custom_trail": null
         },
         {
-            "id": "1768403444.298811",
-            "ticker": "4011.T",
-            "name": "ヘッドウォーター",
-            "price": 0.0,
-            "status": "watching",
-            "shares": 100.0,
-            "custom_stop": null,
-            "custom_trail": null
-        },
-        {
-            "id": "1768403934.111767",
-            "ticker": "5885.T",
-            "name": "ジーデップアドバンス",
-            "price": 0.0,
-            "status": "watching",
-            "shares": 100.0,
-            "custom_stop": null,
-            "custom_trail": null
-        },
-        {
             "id": "1768458828.510057",
             "ticker": "5724.T",
             "name": "ASAKA RIKEN CO LTD",
@@ -115,8 +95,8 @@
             "ticker": "4011.T",
             "name": "HEADWATERS CO LTD",
             "price": 0.0,
-            "shares": 100,
             "status": "watching",
+            "shares": 100.0,
             "custom_stop": null,
             "custom_trail": null
         },
@@ -125,8 +105,8 @@
             "ticker": "5885.T",
             "name": "GDEP ADVANCE INC",
             "price": 0.0,
-            "shares": 100,
             "status": "watching",
+            "shares": 100.0,
             "custom_stop": null,
             "custom_trail": null
         }
