@@ -14,9 +14,9 @@
             "id": "1768174548.522333",
             "ticker": "6629.T",
             "name": "TECHNO HORIZON CO LTD",
-            "price": 0.0,
-            "status": "watching",
-            "shares": 0.0,
+            "price": 1150.0,
+            "status": "holding",
+            "shares": 400,
             "custom_stop": null,
             "custom_trail": null
         },
