@@ -85,8 +85,8 @@
             "ticker": "7777.T",
             "name": "3-D MATRIX LTD",
             "price": 491.0,
-            "status": "watching",
-            "shares": 1000.0,
+            "status": "holding",
+            "shares": 1100,
             "custom_stop": null,
             "custom_trail": null
         }
