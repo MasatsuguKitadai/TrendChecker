@@ -85,7 +85,7 @@
             "ticker": "464A.T",
             "name": "QPS HOLDINGS INC",
             "price": 1850.0,
-            "status": "holding",
+            "status": "watc",
             "shares": 200.0,
             "custom_stop": null,
             "custom_trail": null
