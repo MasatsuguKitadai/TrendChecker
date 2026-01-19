@@ -89,16 +89,6 @@
             "shares": 1100.0,
             "custom_stop": null,
             "custom_trail": null
-        },
-        {
-            "id": "1768831596.405595",
-            "ticker": "464A.T",
-            "name": "QPS HOLDINGS INC",
-            "price": 0.0,
-            "shares": 100,
-            "status": "holding",
-            "custom_stop": null,
-            "custom_trail": null
         }
     ],
     "settings": {
