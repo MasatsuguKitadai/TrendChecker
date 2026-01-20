@@ -108,8 +108,9 @@
    ボタンのカスタムデザイン体系
    ========================================= */
 
-.stButton > button {
+.stButton > button[kind="primary"] {
   background-color: #1e1e1e;
+  border: #444 1px solid;
   width: auto !important;
   height: auto !important; /* 高さを自動調整 */
   padding: 4px 10px !important; /* ボタンの内側の余白を狭く */
@@ -118,7 +119,7 @@
   right: 20px;
 }
 
-.stButton > button p {
+.stButton > button[kind="primary"] p {
   font-size: 10px !important; /* 4pxは読めないので10px推奨 */
 }
 

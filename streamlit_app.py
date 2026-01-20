@@ -256,7 +256,7 @@ def main():
                     """, unsafe_allow_html=True)
                     
                     # 削除ボタンを追加
-                    if  st.button("削除", key=f"del_{s['id']}", use_container_width=True):
+                    if  st.button("削除", key=f"del_{s['id']}", use_container_width=True,type="primary"):
                         st.session_state.data["portfolio"] = [x for x in st.session_state.data["portfolio"] if x['id'] != s['id']]
                         sync_github(st.session_state.data, action="save")
                         st.rerun()
@@ -334,7 +334,7 @@ def main():
                     </div>
                     """, unsafe_allow_html=True)
 
-                    if st.button("保有へ", key=f"mov_{s['id']}", use_container_width=True):
+                    if st.button("保有へ", key=f"mov_{s['id']}", use_container_width=True, type="primary"):
                         for p in st.session_state.data["portfolio"]:
                             if p['id'] == s['id']:
                                 p['status'] = 'holding'
