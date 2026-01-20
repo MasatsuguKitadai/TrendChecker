@@ -99,6 +99,16 @@
             "shares": 100.0,
             "custom_stop": null,
             "custom_trail": null
+        },
+        {
+            "id": "1768919700.359422",
+            "ticker": "202A.T",
+            "name": "202A.T",
+            "price": 3623.0,
+            "shares": 100,
+            "status": "holding",
+            "custom_stop": null,
+            "custom_trail": null
         }
     ],
     "settings": {
