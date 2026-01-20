@@ -113,10 +113,10 @@
         {
             "id": "1768920123.810577",
             "ticker": "8306.T",
-            "name": "8306.T",
+            "name": "MITSUBISHI UFJ",
             "price": 0.0,
-            "shares": 100,
             "status": "watching",
+            "shares": 100.0,
             "custom_stop": null,
             "custom_trail": null
         }
