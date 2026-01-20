@@ -31,16 +31,6 @@
             "custom_trail": null
         },
         {
-            "id": "1768834435.513159",
-            "ticker": "202A.T",
-            "name": "MAMEZO CO LTD",
-            "price": 3623.0,
-            "status": "holding",
-            "shares": 100.0,
-            "custom_stop": null,
-            "custom_trail": null
-        },
-        {
             "id": "1768834507.052271",
             "ticker": "7777.T",
             "name": "3-D MATRIX LTD",
