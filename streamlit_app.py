@@ -13,7 +13,7 @@ import logic
 # ==========================================
 # 0. 基本設定
 # ==========================================
-st.set_page_config(page_title="Trend Checker Pro v6.0", layout="wide")
+st.set_page_config(page_title="Trend Checker Pro v6.1", layout="wide")
 
 def load_css(file_name):
     """CSSファイルを読み込んで適用する"""
@@ -35,7 +35,7 @@ def check_password():
     with login_area.container():
         st.markdown('<div class="login-container">', unsafe_allow_html=True)
         st.title("🔒 Trend Checker Pro")
-        st.write("Mechanical Trading Engine v6.0")
+        st.write("Mechanical Trading Engine v6.1")
         password_input = st.text_input("Password", type="password")
         if st.button("Login", type="primary", use_container_width=True):
             if password_input == st.secrets["PASSWORD"]:
@@ -113,12 +113,12 @@ def main():
     data = st.session_state.data
     settings = data.get("settings", {"total_capital": 1000000, "risk_per_trade": 2.0})
 
-    st.title("📈 Trend Checker Pro v6.0")
+    st.title("📈 Trend Checker Pro v6.1")
 
     # --- サイドバー ---
     with st.sidebar:
         st.header("⚙️ 戦略モード設定")
-        # モード切替UIの追加
+        # モード切替UI
         strategy_mode_jp = st.radio(
             "運用スタイル", 
             ["短期", "長期"],
@@ -130,7 +130,7 @@ def main():
         st.divider()
         st.header("💰 資金管理設定")
         new_capital = st.number_input("総投資資金 (円)", value=int(settings.get("total_capital", 1000000)), step=100000)
-        new_risk = st.slider("1トレード許容リスク (%)", 0.5, 5.0, float(settings.get("risk_per_trade", 2.0)))
+        new_risk = st.slider("1トレード許容リスク (%)", 1, 5, 3) / 100
         
         if st.button("資金設定を保存", use_container_width=True):
             st.session_state.data["settings"] = {"total_capital": new_capital, "risk_per_trade": new_risk}
@@ -147,6 +147,7 @@ def main():
         st.header("➕ 銘柄追加")
         with st.form("add_stock_form", clear_on_submit=True):
             t_code = st.text_input("銘柄コード (例: 202A.T)")
+            t_genre = st.text_input("ジャンル (例: 半導体, 優待, 鉄鋼)") # --- 追加 ---
             t_status = st.selectbox("カテゴリ", ["保有株 (Exit監視)", "監視株 (Entry判定)"])
             t_price = st.number_input("取得/目安単価", min_value=0.0)
             t_shares = st.number_input("株数", min_value=0, step=100, value=100)
@@ -155,7 +156,10 @@ def main():
                     name = fetch_stock_name(t_code)
                     st.session_state.data["portfolio"].append({
                         "id": str(datetime.now().timestamp()),
-                        "ticker": t_code, "name": name, "price": t_price,
+                        "ticker": t_code, 
+                        "name": name, 
+                        "genre": t_genre, # --- 追加 ---
+                        "price": t_price,
                         "shares": t_shares, 
                         "status": "holding" if "保有" in t_status else "watching",
                         "custom_stop": None, "custom_trail": None
@@ -183,8 +187,14 @@ def main():
     # --- データエディタ ---
     with st.expander("🛠️ ポートフォリオ一括管理 (JSON編集)", expanded=False):
         df_editor = pd.DataFrame(st.session_state.data["portfolio"])
-        for col in ['shares', 'custom_stop', 'custom_trail']:
+        # genre カラムなども編集可能にする
+        for col in ['genre', 'shares', 'custom_stop', 'custom_trail']: # --- 'genre' を追加 ---
             if col not in df_editor.columns: df_editor[col] = None
+        
+        # カラム順序を整理（見やすくするため）
+        cols_order = [c for c in ['ticker', 'name', 'genre', 'status', 'price', 'shares', 'custom_stop', 'custom_trail', 'id'] if c in df_editor.columns]
+        df_editor = df_editor[cols_order]
+
         edited_df = st.data_editor(df_editor, num_rows="dynamic", use_container_width=True)
         if st.button("変更をクラウド保存", use_container_width=True):
             st.session_state.data["portfolio"] = edited_df.to_dict(orient="records")
@@ -205,14 +215,14 @@ def main():
             st.markdown(f"### 📋 逆指値注文")
             st.caption("証券アプリで以下の逆指値（成行売）を設定してください。")
             
-          # 3列グリッドで表示
+            # 3列グリッドで表示
             cols = st.columns(len(current_holdings) if len(current_holdings) < 3 else 3)
             
             for idx, s in enumerate(current_holdings):
                 df = get_technical_analysis(s['ticker'])
                 if df is None: continue
                 
-                # logic.py の新しい関数引数に対応 (ma75も取得)
+                # 指標取得
                 curr, high, rsi, ma75 = logic.get_latest_metrics(df, s['price'], s['id'])
                 
                 p_stop = s.get('custom_stop')
@@ -220,7 +230,7 @@ def main():
                 applied_stop = (p_stop / 100) if (pd.notnull(p_stop) and p_stop > 0) else default_stop_pct
                 applied_trail = (p_trail / 100) if (pd.notnull(p_trail) and p_trail > 0) else default_trail_pct
                 
-                # --- ロジック呼び出し ---
+                # ロジック呼び出し
                 strategy = logic.calculate_exit_strategy(
                     s['price'], curr, high, ma75, applied_stop, applied_trail, mode=strategy_mode
                 )
@@ -230,16 +240,29 @@ def main():
 
                 # 損益額の計算
                 unrealized_pl = (curr - s['price']) * s.get('shares', 0)
-                pl_color = "#2ecc71" if unrealized_pl < 0 else "#ff4b4b" # プラスなら緑、マイナスなら赤（提示コード準拠）
+                pl_color = "#2ecc71" if unrealized_pl > 0 else "#ff4b4b" # 修正：プラスなら緑
                 
+                # ジャンル取得
+                genre_text = s.get('genre') if s.get('genre') else ""
+
                 with cols[idx % 3]:
-                    st.markdown(f"""
+                    # カードHTMLの構築
+                    html = f"""
                     <div class="guide-card {card_class}">
                         <div class="card-header">
                             <span class="card-ticker">{s['ticker']}</span>
                             <span class="{label_class}">{strategy['label']}</span>
                         </div>
                         <div class="card-name">{s.get('name', s['ticker'])}</div>
+                    """
+                    
+                    # ジャンルがあれば表示
+                    if genre_text:
+                        html += f'<div class="card-genre">{genre_text}</div>'
+                    else:
+                        html += '<div style="height: 20px;"></div>' # レイアウト崩れ防止のスペーサー
+
+                    html += f"""
                         <div class="card-price-area">
                             {strategy['order_price']:,.0f} <span class="card-price-unit">円以下で売</span>
                         </div>
@@ -253,10 +276,11 @@ def main():
                             <div>保有株数：{s.get('shares', 0)} 株</div>
                         </div>
                     </div>
-                    """, unsafe_allow_html=True)
+                    """
+                    st.markdown(html, unsafe_allow_html=True)
                     
-                    # 削除ボタンを追加
-                    if  st.button("削除", key=f"del_{s['id']}", use_container_width=True,type="primary"):
+                    # 削除ボタン
+                    if  st.button("削除", key=f"del_{s['id']}", use_container_width=True, type="primary"):
                         st.session_state.data["portfolio"] = [x for x in st.session_state.data["portfolio"] if x['id'] != s['id']]
                         sync_github(st.session_state.data, action="save")
                         st.rerun()
@@ -266,11 +290,15 @@ def main():
     # --- タブ2: 監視銘柄 ---
     with tab2:
         current_watchings = [s for s in st.session_state.data["portfolio"] if s.get("status") == "watching"]
-        # 現金余力の計算（全保有株の現在評価額を引いたもの）
-        current_holdings_value = sum([
-            logic.get_latest_metrics(get_technical_analysis(h['ticker']), h['price'], h['id'])[0] * h.get('shares', 0)
-            for h in st.session_state.data["portfolio"] if h.get("status") == "holding" and get_technical_analysis(h['ticker']) is not None
-        ])
+        
+        # 現金余力計算
+        current_holdings_value = 0
+        for h in st.session_state.data["portfolio"]:
+             if h.get("status") == "holding":
+                 df_temp = get_technical_analysis(h['ticker'])
+                 if df_temp is not None:
+                     current_holdings_value += df_temp['Close'].iloc[-1] * h.get('shares', 0)
+                     
         cash_pos = settings.get("total_capital", 1000000) - current_holdings_value
         
         st.markdown(f"### 🏦 買付余力: {cash_pos:,.0f}円")
@@ -279,24 +307,20 @@ def main():
         if not current_watchings:
             st.info("監視中の銘柄はありません。サイドバーから追加してください。")
         else:
-            # 3列グリッド
             cols = st.columns(len(current_watchings) if len(current_watchings) < 3 else 3)
 
             for idx, s in enumerate(current_watchings):
                 df = get_technical_analysis(s['ticker'])
                 if df is None: continue
                 
-                # Entry用データ取得
                 curr = df['Close'].iloc[-1]
                 rsi = df['RSI'].iloc[-1]
                 vol_curr = df['Volume'].iloc[-1]
                 vol_ma5 = df['VolMA5'].iloc[-1]
                 vol_ratio = vol_curr / vol_ma5 if vol_ma5 > 0 else 0
                 
-                # ロジック判定
                 score, reasons = logic.analyze_entry_strategy(df)
                 
-                # 資金管理からの推奨株数算出
                 rec_shares = logic.calculate_position_size(
                     settings.get("total_capital", 1000000), 
                     settings.get("risk_per_trade", 2.0), 
@@ -304,35 +328,44 @@ def main():
                     default_stop_pct
                 )
                 
-                # デザイン判定
                 is_buy_signal = score >= 50
-                card_class = "bg-safe" if is_buy_signal else "bg-normal" # 買い時は緑、それ以外は通常
+                card_class = "bg-safe" if is_buy_signal else "bg-normal"
                 label_text = f"🚀 買い時：{score}点" if is_buy_signal else f"💤 監視中：{score}点"
-                label_class = "card-label-green" if is_buy_signal else "card-label-gray" # card-label-grayはCSSになければ白文字になります
+                label_class = "card-label-green" if is_buy_signal else "card-label-gray"
                 
-                # 加点理由のテキスト化
                 reason_text = ", ".join(reasons) if reasons else "特になし"
+                genre_text = s.get('genre') if s.get('genre') else ""
 
                 with cols[idx % 3]:
-                    st.markdown(f"""
+                    html = f"""
                     <div class="guide-card {card_class}">
                         <div class="card-header">
                             <span class="card-ticker">{s['ticker']}</span>
                             <span class="{label_class}">{label_text}</span>
                         </div>
                         <div class="card-name">{s.get('name', s['ticker'])}</div>
+                    """
+
+                    if genre_text:
+                        html += f'<div class="card-genre">{genre_text}</div>'
+                    else:
+                        html += '<div style="height: 20px;"></div>'
+
+                    html += f"""
                         <div class="card-price-area">
                             {curr:,.0f} <span class="card-price-unit">円</span>
                         </div>
                         <div class="card-footer">
                             <div>RSI：{rsi:.1f}</div>
                             <div>出来高倍率：{vol_ratio:.1f}倍</div>
+                            <div>期間高値：{high:,.0f} 円</div>
                             <div style="font-size: 0.7rem; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                 要因：{reason_text}
                             </div>
                         </div>
                     </div>
-                    """, unsafe_allow_html=True)
+                    """
+                    st.markdown(html, unsafe_allow_html=True)
 
                     if st.button("保有へ", key=f"mov_{s['id']}", use_container_width=True, type="primary"):
                         for p in st.session_state.data["portfolio"]:
@@ -342,7 +375,6 @@ def main():
                                 p['shares'] = rec_shares
                         sync_github(st.session_state.data, action="save")
                         st.rerun()
-
 
 if __name__ == "__main__":
     main()
