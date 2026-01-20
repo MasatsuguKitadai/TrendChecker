@@ -1,124 +1,136 @@
 {
     "portfolio": [
         {
-            "id": "1768174449.404091",
             "ticker": "464A.T",
             "name": "QPS HOLDINGS INC",
-            "price": 1760.0,
+            "genre": "航空宇宙",
             "status": "holding",
+            "price": 1760.0,
             "shares": 200.0,
             "custom_stop": null,
-            "custom_trail": null
+            "custom_trail": null,
+            "id": "1768174449.404091"
         },
         {
-            "id": "1768458828.510057",
             "ticker": "5724.T",
             "name": "ASAKA RIKEN CO LTD",
-            "price": 0.0,
+            "genre": "レアアース",
             "status": "watching",
+            "price": 0.0,
             "shares": 100.0,
             "custom_stop": null,
-            "custom_trail": null
+            "custom_trail": null,
+            "id": "1768458828.510057"
         },
         {
-            "id": "1768833918.355908",
             "ticker": "6629.T",
             "name": "TECHNO HORIZON CO LTD",
-            "price": 0.0,
+            "genre": null,
             "status": "watching",
+            "price": 0.0,
             "shares": 100.0,
             "custom_stop": null,
-            "custom_trail": null
+            "custom_trail": null,
+            "id": "1768833918.355908"
         },
         {
-            "id": "1768834507.052271",
             "ticker": "7777.T",
             "name": "3-D MATRIX LTD",
-            "price": 480.0,
+            "genre": "バイオ",
             "status": "holding",
+            "price": 480.0,
             "shares": 500.0,
             "custom_stop": null,
-            "custom_trail": null
+            "custom_trail": null,
+            "id": "1768834507.052271"
         },
         {
-            "id": "1768835256.191639",
             "ticker": "3036.T",
             "name": "ALCONIX CORPORATION",
-            "price": 0.0,
+            "genre": null,
             "status": "watching",
+            "price": 0.0,
             "shares": 100.0,
             "custom_stop": null,
-            "custom_trail": null
+            "custom_trail": null,
+            "id": "1768835256.191639"
         },
         {
-            "id": "1768835490.499249",
             "ticker": "186A.T",
             "name": "ASTROSCALE HOLDINGS INC",
-            "price": 0.0,
+            "genre": "航空宇宙",
             "status": "watching",
+            "price": 0.0,
             "shares": 100.0,
             "custom_stop": null,
-            "custom_trail": null
+            "custom_trail": null,
+            "id": "1768835490.499249"
         },
         {
-            "id": "1768835652.111902",
             "ticker": "290A.T",
             "name": "SYNSPECTIVE INC",
-            "price": 0.0,
+            "genre": null,
             "status": "watching",
+            "price": 0.0,
             "shares": 100.0,
             "custom_stop": null,
-            "custom_trail": null
+            "custom_trail": null,
+            "id": "1768835652.111902"
         },
         {
-            "id": "1768865887.30497",
             "ticker": "6330.T",
             "name": "TOYO ENGINEERING CORP",
-            "price": 0.0,
+            "genre": "レアアース",
             "status": "watching",
+            "price": 0.0,
             "shares": 100.0,
             "custom_stop": null,
-            "custom_trail": null
+            "custom_trail": null,
+            "id": "1768865887.30497"
         },
         {
-            "id": "1768865992.742718",
             "ticker": "4011.T",
             "name": "HEADWATERS CO LTD",
-            "price": 0.0,
+            "genre": null,
             "status": "watching",
+            "price": 0.0,
             "shares": 100.0,
             "custom_stop": null,
-            "custom_trail": null
+            "custom_trail": null,
+            "id": "1768865992.742718"
         },
         {
-            "id": "1768866021.422238",
             "ticker": "5885.T",
             "name": "GDEP ADVANCE INC",
-            "price": 0.0,
+            "genre": null,
             "status": "watching",
+            "price": 0.0,
             "shares": 100.0,
             "custom_stop": null,
-            "custom_trail": null
+            "custom_trail": null,
+            "id": "1768866021.422238"
         },
         {
-            "id": "1768919700.359422",
             "ticker": "202A.T",
             "name": "MAMEZO HD",
-            "price": 3623.0,
+            "genre": "フィジカルAI",
             "status": "holding",
+            "price": 3623.0,
             "shares": 100.0,
             "custom_stop": null,
-            "custom_trail": null
+            "custom_trail": null,
+            "id": "1768919700.359422"
         },
         {
-            "id": "1768920123.810577",
             "ticker": "8306.T",
             "name": "MITSUBISHI UFJ",
-            "price": 0.0,
+            "genre": "金融",
             "status": "watching",
+            "price": 0.0,
             "shares": 100.0,
             "custom_stop": null,
-            "custom_trail": null
+            "custom_trail": null,
+            "id": "1768920123.810577"
         }
     ],
     "settings": {
