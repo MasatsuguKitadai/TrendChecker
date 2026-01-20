@@ -103,6 +103,6 @@
     ],
     "settings": {
         "total_capital": 1400000,
-        "risk_per_trade": 2.0
+        "risk_per_trade": 5.0
     }
 }
