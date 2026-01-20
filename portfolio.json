@@ -109,6 +109,16 @@
             "shares": 100.0,
             "custom_stop": null,
             "custom_trail": null
+        },
+        {
+            "id": "1768920123.810577",
+            "ticker": "8306.T",
+            "name": "8306.T",
+            "price": 0.0,
+            "shares": 100,
+            "status": "watching",
+            "custom_stop": null,
+            "custom_trail": null
         }
     ],
     "settings": {
