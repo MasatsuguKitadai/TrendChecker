@@ -1,17 +1,6 @@
 {
     "portfolio": [
         {
-            "ticker": "464A.T",
-            "name": "QPS HOLDINGS INC",
-            "genre": "航空宇宙",
-            "status": "holding",
-            "price": 1760.0,
-            "shares": 200.0,
-            "custom_stop": null,
-            "custom_trail": null,
-            "id": "1768174449.404091"
-        },
-        {
             "ticker": "5724.T",
             "name": "ASAKA RIKEN CO LTD",
             "genre": "レアアース",
