@@ -34,17 +34,6 @@
             "id": "1768833918.355908"
         },
         {
-            "ticker": "7777.T",
-            "name": "3-D MATRIX LTD",
-            "genre": "バイオ",
-            "status": "holding",
-            "price": 480.0,
-            "shares": 500.0,
-            "custom_stop": null,
-            "custom_trail": null,
-            "id": "1768834507.052271"
-        },
-        {
             "ticker": "3036.T",
             "name": "ALCONIX CORPORATION",
             "genre": null,
