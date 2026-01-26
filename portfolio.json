@@ -89,17 +89,6 @@
             "id": "1768866021.422238"
         },
         {
-            "ticker": "202A.T",
-            "name": "MAMEZO HD",
-            "genre": "フィジカルAI",
-            "status": "holding",
-            "price": 3623.0,
-            "shares": 100.0,
-            "custom_stop": null,
-            "custom_trail": null,
-            "id": "1768919700.359422"
-        },
-        {
             "ticker": "8306.T",
             "name": "MITSUBISHI UFJ",
             "genre": "金融",
