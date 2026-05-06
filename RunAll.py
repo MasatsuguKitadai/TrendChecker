@@ -53,7 +53,7 @@ def main():
         # "05_Simulation_Short.py", # 5. 空売りシミュレーション[cite: 10, 11]
         # "06_Check_Short.py",      # 6. 空売り可視化[cite: 4, 11]
         "07_Results.py",          # 7. 明日のアクション指示[cite: 8, 11]
-        "08_CreateDashboard.py"   # 8. ダッシュボード生成[cite: 5, 11]
+        "08_CreateDashboard.py",  # 8. ダッシュボード生成[cite: 5, 11]
         "09_SendEmail.py"
     ]
 
