@@ -1,8 +1,6 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.mime.base import MIMEBase
-from email import encoders
 import os
 
 def send_email():
@@ -12,6 +10,8 @@ def send_email():
     SENDER_EMAIL = os.environ.get("GMAIL_USER")     # 送信元Gmailアドレス
     SENDER_PASSWORD = os.environ.get("GMAIL_PASS") # アプリパスワード
     RECEIVER_EMAIL = os.environ.get("RECEIVER_EMAIL") # 送信先アドレス
+    # GitHub PagesのURLを環境変数から取得（設定されていない場合のデフォルトも指定可能）
+    GH_PAGES_URL = os.environ.get("GH_PAGES_URL", "https://<あなたのユーザー名>.github.io/TrendChecker/Dashboard.html")
 
     if not SENDER_EMAIL or not SENDER_PASSWORD:
         print("エラー: メールの認証情報が設定されていません。")
@@ -21,22 +21,17 @@ def send_email():
     msg = MIMEMultipart()
     msg['From'] = SENDER_EMAIL
     msg['To'] = RECEIVER_EMAIL or SENDER_EMAIL
-    msg['Subject'] = "【株価分析】本日のレポートとアクション"
+    msg['Subject'] = "【株価分析】本日のレポート更新通知"
 
-    body = "本日の解析が完了しました。詳細は添付の Dashboard.html または GitHub Pages を確認してください。"
+    # 本文の作成（リンクを掲載）
+    body = f"""本日の解析が完了し、ダッシュボードを更新しました。
+最新のアクションとチャートは以下のリンクから確認してください。
+
+{GH_PAGES_URL}
+
+※このメールはシステムより自動送信されています。"""
+    
     msg.attach(MIMEText(body, 'plain', 'utf-8'))
-
-    # Dashboard.html を添付
-    filename = "Dashboard.html"
-    if os.path.exists(filename):
-        with open(filename, "rb") as attachment:
-            part = MIMEBase("application", "octet-stream")
-            part.set_payload(attachment.read())
-            encoders.encode_base64(part)
-            part.add_header("Content-Disposition", f"attachment; filename= {filename}")
-            msg.attach(part)
-    else:
-        print(f"警告: {filename} が見つかりません。")
 
     # 送信実行
     try:

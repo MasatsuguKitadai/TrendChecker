@@ -3,9 +3,13 @@ name: Daily Stock Analysis
 on:
   schedule:
     - cron: "0 7 * * *" # 日本時間 16:00
-  workflow_dispatch: # 手動実行ボタン用
+  workflow_dispatch:
 
-# 1. 権限エラー(Exit code 128)の修正：書き込み権限を明示的に許可
+# --- ここを追加：Node.js 24への強制移行に対応 ---
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+# ----------------------------------------------
+
 permissions:
   contents: write
 
@@ -13,7 +17,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # 2. バージョン更新：Node.js警告への対応（v3 -> v4, v4 -> v5）
       - uses: actions/checkout@v4
 
       - name: Set up Python
@@ -30,18 +33,18 @@ jobs:
           GMAIL_USER: ${{ secrets.GMAIL_USER }}
           GMAIL_PASS: ${{ secrets.GMAIL_PASS }}
           RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
+          GH_PAGES_URL: ${{ secrets.GH_PAGES_URL }} # ← これを追加
         run: python RunAll.py
 
-      # 3. 入力エラーの修正：公開用フォルダを作成してファイルをまとめる
       - name: Prepare for Deployment
+        # 08_CreateDashboard.py で生成された Dashboard.html などを公開用フォルダにまとめます
         run: |
           mkdir -p public/visualized_charts
-          cp Dashboard.html public/
+          if [ -f "Dashboard.html" ]; then cp Dashboard.html public/; fi[cite: 3]
           if [ -d "visualized_charts" ]; then cp -r visualized_charts/* public/visualized_charts/; fi
 
-      # 4. GitHub Pagesへのデプロイ（最新版 v4 を使用）
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public # まとめたフォルダを指定
+          publish_dir: ./public
