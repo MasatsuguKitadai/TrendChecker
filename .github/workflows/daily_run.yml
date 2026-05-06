@@ -2,7 +2,7 @@ name: Daily Stock Analysis
 
 on:
   schedule:
-    - cron: '0 7 * * *' # 日本時間 16:00
+    - cron: "0 7 * * *" # 日本時間 16:00
   workflow_dispatch: # 手動実行ボタン用
 
 # 1. 権限エラー(Exit code 128)の修正：書き込み権限を明示的に許可
@@ -19,7 +19,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: "3.10"
 
       - name: Install dependencies
         run: |
@@ -30,7 +30,7 @@ jobs:
           GMAIL_USER: ${{ secrets.GMAIL_USER }}
           GMAIL_PASS: ${{ secrets.GMAIL_PASS }}
           RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
-        run: python RunAll.py[cite: 2]
+        run: python RunAll.py
 
       # 3. 入力エラーの修正：公開用フォルダを作成してファイルをまとめる
       - name: Prepare for Deployment
@@ -44,4 +44,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public  # まとめたフォルダを指定
+          publish_dir: ./public # まとめたフォルダを指定
