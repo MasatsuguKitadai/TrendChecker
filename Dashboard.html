@@ -1,0 +1,151 @@
+
+    <!DOCTYPE html>
+    <html lang="ja">
+    <head>
+        <meta charset="UTF-8"><title>Stock Advisor Dashboard</title>
+        <style>
+            :root { --primary: #007bff; --bg: #ffffff; --sidebar-bg: #f8f9fa; --text: #212529; --border: #dee2e6; --up-color: #28a745; --down-color: #dc3545; }
+            body { font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; background: var(--bg); color: var(--text); overflow: hidden; }
+            .nav-bar { display: flex; background: #fff; border-bottom: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+            .nav-item { padding: 16px 24px; cursor: pointer; color: #6c757d; border-bottom: 3px solid transparent; font-weight: 500; }
+            .nav-item.active { color: var(--primary); border-bottom-color: var(--primary); background: #f0f7ff; }
+            .content-page { display: none; height: calc(100vh - 55px); overflow: auto; }
+            .content-page.active { display: flex; }
+            
+            .container { width: 70%; padding: 30px; box-sizing: border-box; margin: 0 auto; }
+            table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
+            th, td { padding: 15px; border-bottom: 1px solid var(--border); text-align: left; }
+            th { background: #f1f3f5; font-weight: 600; color: #495057; }
+            
+            .row-summary { background-color: #e7f3ff; font-weight: bold; }
+            .row-summary td { border-bottom: 2px solid var(--primary); }
+            
+            .gap-up { color: var(--up-color); font-weight: bold; } 
+            .gap-down { color: var(--down-color); font-weight: bold; } 
+
+            .action-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.85em; font-weight: bold; background: #e9ecef; }
+            .new-signal { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+            /* 【追加】保持日用の緑色バッジスタイル */
+            .hold-signal { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+
+            #sidebar { width: 380px; background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+            #chart-area { flex: 1; background: #fff; }
+            .list-item { padding: 15px; border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
+            .list-item:hover { background: #e9ecef; }
+            .sub-tab { display: flex; border-bottom: 1px solid var(--border); }
+            .sub-tab div { flex: 1; padding: 12px; text-align: center; cursor: pointer; color: #6c757d; }
+            .sub-tab div.active { color: var(--primary); font-weight: bold; background: #fff; }
+            
+            .ticker-sub { font-size: 0.85em; color: #6c757d; margin-left: 5px; font-weight: normal; }
+        </style>
+    </head>
+    <body>
+        <div class="nav-bar">
+            <div id="nav-1" class="nav-item active" onclick="showPage(1)">本日の株価</div>
+            <div id="nav-2" class="nav-item" onclick="showPage(2)">シミュレーション</div>
+        </div>
+
+        <div id="page-1" class="content-page active">
+            <div class="container">
+                <h2 style="margin-top:0;">⚡ 明日のアクション</h2>
+                <table>
+                    <thead><tr><th>Ticker</th><th>銘柄名</th><th>終値</th><th>前日との差（損益率）</th><th>アクション</th></tr></thead>
+                    <tbody id="action-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="page-2" class="content-page">
+            <div id="sidebar">
+                <div class="sub-tab">
+                    <div id="sub-l" class="active" onclick="setMode('long')">ロング</div>
+                    <div id="sub-s" onclick="setMode('short')">ショート</div>
+                </div>
+                <div id="ticker-list" style="overflow-y:auto; flex:1;"></div>
+            </div>
+            <div id="chart-area"><iframe id="frame" style="width:100%; height:100%; border:none;"></iframe></div>
+        </div>
+
+        <script>
+            const data = [{"Ticker": "5724.T", "Name": "ASAKA RIKEN CO LTD", "Open": 3045.0, "High": 3095.0, "Low": 3030.0, "Close": 3095.0, "GapText": "+50.0 (+1.64%)", "GapRaw": 50.0, "Action": "\u5f85\u6a5f", "Type": "IDLE"}, {"Ticker": "1605.T", "Name": "INPEX CORPORATION", "Open": 4131.0, "High": 4165.0, "Low": 4043.0, "Close": 4118.0, "GapText": "-32.0 (-0.77%)", "GapRaw": -32.0, "Action": "\u7fcc\u65e5\u59cb\u5024\u3067\u65b0\u898f\u8cb7\uff1aMACD\u4e0a\u629c\u3051", "Type": "NEW_LONG"}, {"Ticker": "9412.T", "Name": "SKY PERFECT JSAT CORPORATION", "Open": 3500.0, "High": 3650.0, "Low": 3490.0, "Close": 3515.0, "GapText": "+65.0 (+1.88%)", "GapRaw": 65.0, "Action": "\u30b9\u30ad\u30c3\u30d7", "Type": "HOLD_LONG"}, {"Ticker": "5857.T", "Name": "ARE HOLDINGS INC", "Open": 3575.0, "High": 3575.0, "Low": 3485.0, "Close": 3505.0, "GapText": "-25.0 (-0.71%)", "GapRaw": -25.0, "Action": "\u5f85\u6a5f", "Type": "IDLE"}, {"Ticker": "186A.T", "Name": "ASTROSCALE HOLDINGS INC", "Open": 1263.0, "High": 1347.0, "Low": 1237.0, "Close": 1310.0, "GapText": "+24.0 (+1.87%)", "GapRaw": 24.0, "Action": "\u5f85\u6a5f", "Type": "IDLE"}, {"Ticker": "464A.T", "Name": "QPS HOLDINGS INC", "Open": 2520.0, "High": 2596.0, "Low": 2493.0, "Close": 2530.0, "GapText": "+10.0 (+0.4%)", "GapRaw": 10.0, "Action": "\u30b9\u30ad\u30c3\u30d7", "Type": "HOLD_LONG"}, {"Ticker": "7014.T", "Name": "NAMURA SHIPBUILDING CO", "Open": 4000.0, "High": 4060.0, "Low": 3980.0, "Close": 4025.0, "GapText": "-25.0 (-0.62%)", "GapRaw": -25.0, "Action": "\u5f85\u6a5f", "Type": "IDLE"}, {"Ticker": "6629.T", "Name": "TECHNO HORIZON CO LTD", "Open": 1197.0, "High": 1200.0, "Low": 1145.0, "Close": 1165.0, "GapText": "-15.0 (-1.27%)", "GapRaw": -15.0, "Action": "\u5f85\u6a5f", "Type": "IDLE"}];
+            const nameMap = {"5724.T": "ASAKA RIKEN CO LTD", "1605.T": "INPEX CORPORATION", "9412.T": "SKY PERFECT JSAT CORPORATION", "5857.T": "ARE HOLDINGS INC", "186A.T": "ASTROSCALE HOLDINGS INC", "464A.T": "QPS HOLDINGS INC", "7014.T": "NAMURA SHIPBUILDING CO", "6629.T": "TECHNO HORIZON CO LTD"};
+            const priceMap = {"5724.T": 3095.0, "1605.T": 4118.0, "9412.T": 3515.0, "5857.T": 3505.0, "186A.T": 1310.0, "464A.T": 2530.0, "7014.T": 4025.0, "6629.T": 1165.0};
+            const lSum = {"5724.T": 311.2, "1605.T": 656.2, "9412.T": 888.0, "5857.T": 1048.7, "186A.T": 480.7, "464A.T": 756.1, "7014.T": 662.4, "6629.T": 376.1}, sSum = {};
+            let currentMode = 'long';
+
+            function showPage(n) {
+                document.querySelectorAll('.nav-item, .content-page').forEach(el => el.classList.remove('active'));
+                document.getElementById('nav-'+n).classList.add('active');
+                document.getElementById('page-'+n).classList.add('active');
+            }
+
+            function renderStatus() {
+                const aBody = document.getElementById('action-body');
+                
+                aBody.innerHTML = '';
+
+                data.forEach(r => {
+                    const isSummary = r.Ticker === 'SUMMARY';
+                    const rowClass = isSummary ? 'row-summary' : '';
+                    const gapClass = r.GapRaw > 0 ? 'gap-up' : (r.GapRaw < 0 ? 'gap-down' : '');
+                    
+                    // 【修正】保持日の文言が含まれている場合は緑色のバッジを適用
+                    let badgeClass = 'action-badge';
+                    if (!isSummary) {
+                        if (r.Type.startsWith('NEW')) {
+                            badgeClass += ' new-signal';
+                        } else if (r.Action && (r.Action.includes('スキップ') || r.Action.includes('逆指値'))) {
+                            badgeClass += ' hold-signal';
+                        }
+                    }
+                    
+                    aBody.innerHTML += `<tr class="${rowClass}">
+                        <td><b>${r.Ticker}</b></td>
+                        <td>${r.Name}</td>
+                        <td style="font-size:1.1em; font-weight:600;">${r.Close.toLocaleString()}円</td>
+                        <td class="${gapClass}">${r.GapText}</td>
+                        <td><span class="${badgeClass}">${r.Action}</span></td>
+                    </tr>`;
+                });
+            }
+
+            function setMode(m) {
+                currentMode = m;
+                document.getElementById('sub-l').className = m==='long'?'active':'';
+                document.getElementById('sub-s').className = m==='short'?'active':'';
+                renderList();
+            }
+
+            function renderList() {
+                const list = document.getElementById('ticker-list');
+                list.innerHTML = '';
+                const sum = currentMode === 'long' ? lSum : sSum;
+                const dir = currentMode === 'long' ? 'visualized_charts' : 'visualized_charts_short';
+                const prefix = currentMode === 'long' ? 'chart_' : 'chart_short_';
+
+                Object.keys(sum).forEach(t => {
+                    const mName = nameMap[t] || '';
+                    const currentPrice = priceMap[t] || 0;
+                    const profit = sum[t];
+                    
+                    // 指標の計算：(累積損益 ÷ 現在の株価 × 100)
+                    let ratioStr = "";
+                    if (currentPrice > 0) {
+                        const ratio = (profit / currentPrice) * 100;
+                        ratioStr = `（${ratio.toFixed(1)}%）`;
+                    }
+
+                    const div = document.createElement('div');
+                    div.className = 'list-item';
+                    div.innerHTML = `<b>${t}</b><span class="ticker-sub">${mName}</span><br>
+                                     <small style="color:#6c757d;">累計損益：${profit.toLocaleString()}円${ratioStr}</small>`;
+                    div.onclick = () => document.getElementById('frame').src = dir + '/' + prefix + t + '.html';
+                    list.appendChild(div);
+                });
+            }
+
+            renderStatus(); setMode('long');
+        </script>
+    </body>
+    </html>
+    
