@@ -40,7 +40,7 @@ jobs:
         # 08_CreateDashboard.py で生成された Dashboard.html などを公開用フォルダにまとめます
         run: |
           mkdir -p public/visualized_charts
-          if [ -f "Dashboard.html" ]; then cp Dashboard.html public/; fi[cite: 3]
+          if [ -f "Dashboard.html" ]; then cp Dashboard.html public/; fi
           if [ -d "visualized_charts" ]; then cp -r visualized_charts/* public/visualized_charts/; fi
 
       - name: Deploy to GitHub Pages

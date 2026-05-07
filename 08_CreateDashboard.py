@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import json
+from datetime import datetime
 
 # --- 設定 ---
 LONG_CHART_DIR, SHORT_CHART_DIR = "visualized_charts", "visualized_charts_short"
@@ -9,15 +10,17 @@ ACTION_FILE = "simulation_results/todays_actions.csv"
 OUTPUT_FILE = "Dashboard.html"
 
 def generate_dashboard():
+    # 更新日時の取得
+    now_str = datetime.now().strftime("%Y/%m/%d")
+    
     # アクションデータの読み込み
     df_actions = pd.read_csv(ACTION_FILE) if os.path.exists(ACTION_FILE) else pd.DataFrame()
     actions_json = df_actions.to_dict(orient='records')
     
-    # 銘柄名と株価のマッピングを作成（シミュレーションタブ用）
+    # 銘柄名と株価のマッピングを作成
     name_map = {}
     price_map = {}
     if not df_actions.empty:
-        # SUMMARY行を除外してマッピングを作成
         df_valid = df_actions[df_actions['Ticker'] != 'SUMMARY']
         name_map = dict(zip(df_valid['Ticker'], df_valid['Name']))
         price_map = dict(zip(df_valid['Ticker'], df_valid['Close']))
@@ -31,156 +34,241 @@ def generate_dashboard():
     <!DOCTYPE html>
     <html lang="ja">
     <head>
-        <meta charset="UTF-8"><title>Stock Advisor Dashboard</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Stock Dashboard {now_str}</title>
         <style>
-            :root {{ --primary: #007bff; --bg: #ffffff; --sidebar-bg: #f8f9fa; --text: #212529; --border: #dee2e6; --up-color: #28a745; --down-color: #dc3545; }}
+            :root {{ 
+                --primary: #007bff; --bg: #ffffff; --sidebar-bg: #f8f9fa; --text: #212529; 
+                --border: #dee2e6; --up-color: #28a745; --down-color: #dc3545;
+                --not-owned-bg: #f2f2f2; --not-owned-text: #888;
+            }}
             body {{ font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; background: var(--bg); color: var(--text); overflow: hidden; }}
+            
+            /* ヘッダー */
+            .dashboard-header {{ background: #fff; padding: 15px 10px; text-align: center; border-bottom: 1px solid var(--border); }}
+            .dashboard-header h1 {{ margin: 0; font-size: 1.2rem; color: #333; }}
+            .update-time {{ color: var(--primary); font-weight: bold; }}
+
+            /* ナビゲーション */
             .nav-bar {{ display: flex; background: #fff; border-bottom: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }}
-            .nav-item {{ padding: 16px 24px; cursor: pointer; color: #6c757d; border-bottom: 3px solid transparent; font-weight: 500; }}
+            .nav-item {{ flex: 1; text-align: center; padding: 14px; cursor: pointer; color: #6c757d; border-bottom: 3px solid transparent; font-weight: 500; }}
             .nav-item.active {{ color: var(--primary); border-bottom-color: var(--primary); background: #f0f7ff; }}
-            .content-page {{ display: none; height: calc(100vh - 55px); overflow: auto; }}
+            
+            /* コンテンツ */
+            .content-page {{ display: none; height: calc(100vh - 110px); overflow: auto; }}
             .content-page.active {{ display: flex; }}
+            .container {{ width: 98%; max-width: 1000px; padding: 10px 2px; box-sizing: border-box; margin: 0 auto; }}
             
-            .container {{ width: 70%; padding: 30px; box-sizing: border-box; margin: 0 auto; }}
-            table {{ width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.05); }}
-            th, td {{ padding: 15px; border-bottom: 1px solid var(--border); text-align: left; }}
-            th {{ background: #f1f3f5; font-weight: 600; color: #495057; }}
+            /* テーブル基本 */
+            table {{ width: 100%; border-collapse: collapse; background: #fff; font-size: 0.95em; }}
+            th, td {{ padding: 12px 8px; border-bottom: 1px solid var(--border); }}
+            th {{ background: #f8f9fa; position: sticky; top: 0; z-index: 10; color: #495057; font-size: 0.85em; }}
             
+            .text-center {{ text-align: center !important; }}
+            .text-left {{ text-align: left !important; }}
+
+            /* 行の状態スタイル */
+            .row-not-owned {{ background-color: var(--not-owned-bg) !important; color: var(--not-owned-text); }}
             .row-summary {{ background-color: #e7f3ff; font-weight: bold; }}
-            .row-summary td {{ border-bottom: 2px solid var(--primary); }}
-            
             .gap-up {{ color: var(--up-color); font-weight: bold; }} 
             .gap-down {{ color: var(--down-color); font-weight: bold; }} 
-
-            .action-badge {{ padding: 4px 8px; border-radius: 4px; font-size: 0.85em; font-weight: bold; background: #e9ecef; }}
+            .action-badge {{ padding: 4px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold; background: #e9ecef; display: inline-block; white-space: nowrap; }}
             .new-signal {{ background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }}
-            /* 【追加】保持日用の緑色バッジスタイル */
             .hold-signal {{ background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }}
 
-            #sidebar {{ width: 380px; background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; }}
-            #chart-area {{ flex: 1; background: #fff; }}
-            .list-item {{ padding: 15px; border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s; }}
-            .list-item:hover {{ background: #e9ecef; }}
-            .sub-tab {{ display: flex; border-bottom: 1px solid var(--border); }}
-            .sub-tab div {{ flex: 1; padding: 12px; text-align: center; cursor: pointer; color: #6c757d; }}
-            .sub-tab div.active {{ color: var(--primary); font-weight: bold; background: #fff; }}
-            
-            .ticker-sub {{ font-size: 0.85em; color: #6c757d; margin-left: 5px; font-weight: normal; }}
+            /* スイッチ */
+            .switch {{ position: relative; display: inline-block; width: 40px; height: 20px; vertical-align: middle; }}
+            .switch input {{ opacity: 0; width: 0; height: 0; }}
+            .slider {{ position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }}
+            .slider:before {{ position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }}
+            input:checked + .slider {{ background-color: var(--primary); }}
+            input:checked + .slider:before {{ transform: translateX(20px); }}
+
+            /* 詳細エリア(モバイル) */
+            .detail-row {{ display: none; background-color: #fcfcfc; }}
+            .detail-container {{ 
+                padding: 10px 5px; 
+                display: flex; 
+                justify-content: space-around; 
+                align-items: center; 
+            }}
+            .detail-item {{ display: flex; flex-direction: column; align-items: center; flex: 1; }}
+            .detail-label {{ font-size: 0.7em; color: #777; margin-bottom: 2px; white-space: nowrap; }}
+
+            /* PC用サイドバー/チャート */
+            #sidebar {{ width: 350px; background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; }}
+            #chart-area {{ flex: 1; background: #fff; position: relative; }}
+            iframe {{ width: 100%; height: 100%; border: none; }}
+
+            /* レスポンシブ制御 */
+            @media (min-width: 769px) {{
+                .mobile-only {{ display: none !important; }}
+            }}
+
+            @media (max-width: 768px) {{
+                #nav-2 {{ display: none; }} 
+                .pc-only {{ display: none !important; }}
+                .content-page {{ height: calc(100vh - 95px); }}
+                th, td {{ padding: 12px 6px; }}
+                .ticker-cell {{ display: flex; align-items: center; gap: 5px; }}
+                .arrow-icon {{ font-size: 0.7em; color: #aaa; }}
+            }}
         </style>
     </head>
     <body>
-        <div class="nav-bar">
-            <div id="nav-1" class="nav-item active" onclick="showPage(1)">本日の株価</div>
-            <div id="nav-2" class="nav-item" onclick="showPage(2)">シミュレーション</div>
-        </div>
+        <header class="dashboard-header">
+            <h1>Trend Checker ver2.0：{now_str}</span></h1>
+        </header>
 
-        <div id="page-1" class="content-page active">
+        <nav class="nav-bar">
+            <div id="nav-1" class="nav-item active" onclick="showPage(1)">保有・アクション</div>
+            <div id="nav-2" class="nav-item" onclick="showPage(2)">チャート分析</div>
+        </nav>
+
+        <main id="page-1" class="content-page active">
             <div class="container">
-                <h2 style="margin-top:0;">⚡ 明日のアクション</h2>
                 <table>
-                    <thead><tr><th>Ticker</th><th>銘柄名</th><th>終値</th><th>前日との差（損益率）</th><th>アクション</th></tr></thead>
+                    <thead>
+                        <tr class="pc-only">
+                            <th class="text-left">銘柄</th>
+                            <th class="text-center">終値</th>
+                            <th class="text-center">前日比</th>
+                            <th class="text-center">アクション</th>
+                            <th class="text-center" style="width:60px;">保有</th>
+                        </tr>
+                        <tr class="mobile-only">
+                            <th class="text-left">銘柄 (タップで詳細)</th>
+                            <th class="text-center">アクション</th>
+                        </tr>
+                    </thead>
                     <tbody id="action-body"></tbody>
                 </table>
             </div>
-        </div>
+        </main>
 
-        <div id="page-2" class="content-page">
+        <main id="page-2" class="content-page">
             <div id="sidebar">
-                <div class="sub-tab">
-                    <div id="sub-l" class="active" onclick="setMode('long')">ロング</div>
-                    <div id="sub-s" onclick="setMode('short')">ショート</div>
-                </div>
                 <div id="ticker-list" style="overflow-y:auto; flex:1;"></div>
             </div>
-            <div id="chart-area"><iframe id="frame" style="width:100%; height:100%; border:none;"></iframe></div>
-        </div>
+            <div id="chart-area"><iframe id="frame" name="chart_frame"></iframe></div>
+        </main>
 
         <script>
             const data = {json.dumps(actions_json)};
             const nameMap = {json.dumps(name_map)};
             const priceMap = {json.dumps(price_map)};
-            const lSum = {json.dumps(l_sum)}, sSum = {json.dumps(s_sum)};
-            let currentMode = 'long';
+
+            function getOwnedStatus(ticker) {{
+                return localStorage.getItem('owned_' + ticker) === 'true';
+            }}
+
+            function toggleOwned(ticker, event) {{
+                if(event) event.stopPropagation();
+                const current = getOwnedStatus(ticker);
+                localStorage.setItem('owned_' + ticker, !current);
+                renderStatus();
+            }}
+
+            function toggleDetail(ticker) {{
+                if (window.innerWidth > 768) return;
+                const detailRow = document.getElementById('detail-' + ticker);
+                const isVisible = detailRow.style.display === 'table-row';
+                detailRow.style.display = isVisible ? 'none' : 'table-row';
+            }}
 
             function showPage(n) {{
+                if (window.innerWidth <= 768 && n === 2) return;
                 document.querySelectorAll('.nav-item, .content-page').forEach(el => el.classList.remove('active'));
                 document.getElementById('nav-'+n).classList.add('active');
                 document.getElementById('page-'+n).classList.add('active');
+                if (n===2) renderList();
             }}
 
             function renderStatus() {{
                 const aBody = document.getElementById('action-body');
-                
                 aBody.innerHTML = '';
 
                 data.forEach(r => {{
                     const isSummary = r.Ticker === 'SUMMARY';
-                    const rowClass = isSummary ? 'row-summary' : '';
+                    const isOwned = getOwnedStatus(r.Ticker);
+                    const rowClass = (isSummary ? 'row-summary' : '') + (!isSummary && !isOwned ? ' row-not-owned' : '');
                     const gapClass = r.GapRaw > 0 ? 'gap-up' : (r.GapRaw < 0 ? 'gap-down' : '');
                     
-                    // 【修正】保持日の文言が含まれている場合は緑色のバッジを適用
                     let badgeClass = 'action-badge';
                     if (!isSummary) {{
-                        if (r.Type.startsWith('NEW')) {{
-                            badgeClass += ' new-signal';
-                        }} else if (r.Action && (r.Action.includes('スキップ') || r.Action.includes('逆指値'))) {{
-                            badgeClass += ' hold-signal';
-                        }}
+                        if (r.Type.startsWith('NEW')) badgeClass += ' new-signal';
+                        else if (r.Action && (r.Action.includes('スキップ') || r.Action.includes('保持') || r.Action.includes('逆指値'))) badgeClass += ' hold-signal';
                     }}
-                    
-                    aBody.innerHTML += `<tr class="${{rowClass}}">
-                        <td><b>${{r.Ticker}}</b></td>
-                        <td>${{r.Name}}</td>
-                        <td style="font-size:1.1em; font-weight:600;">${{r.Close.toLocaleString()}}円</td>
-                        <td class="${{gapClass}}">${{r.GapText}}</td>
-                        <td><span class="${{badgeClass}}">${{r.Action}}</span></td>
-                    </tr>`;
-                }});
-            }}
 
-            function setMode(m) {{
-                currentMode = m;
-                document.getElementById('sub-l').className = m==='long'?'active':'';
-                document.getElementById('sub-s').className = m==='short'?'active':'';
-                renderList();
+                    const switchHtml = isSummary ? '' : `
+                        <label class="switch">
+                            <input type="checkbox" ${{isOwned ? 'checked' : ''}} onchange="toggleOwned('${{r.Ticker}}', event)">
+                            <span class="slider"></span>
+                        </label>
+                    `;
+
+                    aBody.innerHTML += `
+                        <tr class="${{rowClass}}" onclick="toggleDetail('${{r.Ticker}}')">
+                            <td class="text-left">
+                                <div class="ticker-cell">
+                                    <span class="mobile-only arrow-icon">▼</span>
+                                    <div><b>${{r.Ticker}}</b><br><small style="color:#666;">${{r.Name}}</small></div>
+                                </div>
+                            </td>
+                            <td class="text-center pc-only" style="font-weight:600;">${{Math.floor(r.Close).toLocaleString()}}</td>
+                            <td class="text-center pc-only ${{gapClass}}">${{r.GapText}}</td>
+                            <td class="text-center">
+                                <span class="${{badgeClass}}">${{r.Action}}</span>
+                            </td>
+                            <td class="text-center pc-only">${{switchHtml}}</td>
+                        </tr>
+                        <tr id="detail-${{r.Ticker}}" class="detail-row">
+                            <td colspan="5">
+                                <div class="detail-container">
+                                    <div class="detail-item">
+                                        <span class="detail-label">終値</span>
+                                        <b style="font-size: 0.9em;">${{Math.floor(r.Close).toLocaleString()}}</b>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">前日比</span>
+                                        <span class="${{gapClass}}" style="font-size: 0.9em;">${{r.GapText}}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">保有</span>
+                                        ${{switchHtml}}
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }});
             }}
 
             function renderList() {{
                 const list = document.getElementById('ticker-list');
-                list.innerHTML = '';
-                const sum = currentMode === 'long' ? lSum : sSum;
-                const dir = currentMode === 'long' ? '{LONG_CHART_DIR}' : '{SHORT_CHART_DIR}';
-                const prefix = currentMode === 'long' ? 'chart_' : 'chart_short_';
-
-                Object.keys(sum).forEach(t => {{
-                    const mName = nameMap[t] || '';
-                    const currentPrice = priceMap[t] || 0;
-                    const profit = sum[t];
-                    
-                    // 指標の計算：(累積損益 ÷ 現在の株価 × 100)
-                    let ratioStr = "";
-                    if (currentPrice > 0) {{
-                        const ratio = (profit / currentPrice) * 100;
-                        ratioStr = `（${{ratio.toFixed(1)}}%）`;
-                    }}
-
+                list.innerHTML = '<div style="padding:15px; font-weight:bold; border-bottom:1px solid #ddd;">銘柄リスト (ロング)</div>';
+                data.filter(r => r.Ticker !== 'SUMMARY').forEach(r => {{
                     const div = document.createElement('div');
-                    div.className = 'list-item';
-                    div.innerHTML = `<b>${{t}}</b><span class="ticker-sub">${{mName}}</span><br>
-                                     <small style="color:#6c757d;">累計損益：${{profit.toLocaleString()}}円${{ratioStr}}</small>`;
-                    div.onclick = () => document.getElementById('frame').src = dir + '/' + prefix + t + '.html';
+                    div.style.cssText = 'padding:15px; border-bottom:1px solid #eee; cursor:pointer; transition:0.2s;';
+                    div.innerHTML = `<b>${{r.Ticker}}</b> <small>${{r.Name}}</small>`;
+                    div.onmouseover = () => div.style.background = "#f0f0f0";
+                    div.onmouseout = () => div.style.background = "transparent";
+                    div.onclick = () => {{
+                        document.getElementById('frame').src = '{LONG_CHART_DIR}/chart_' + r.Ticker + '.html';
+                    }};
                     list.appendChild(div);
                 }});
             }}
 
-            renderStatus(); setMode('long');
+            renderStatus(); 
         </script>
     </body>
     </html>
     """
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         f.write(html_content)
-    print(f"◎ Dashboard.html 更新完了")
+    print(f"◎ Dashboard.html 更新完了 ({now_str})")
 
 if __name__ == "__main__":
     generate_dashboard()

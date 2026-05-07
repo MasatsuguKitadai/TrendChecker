@@ -4,7 +4,7 @@ import os
 
 # --- 設定 ---
 # 解析対象の銘柄リスト
-TICKERS = ["1605.T", "464A.T", "186A.T", "6629.T", "9412.T", "5724.T", "5857.T", "7014.T"]
+TICKERS = ["1605.T", "1893.T", "464A.T", "186A.T", "6629.T", "9412.T", "5724.T", "5857.T", "7014.T"]
 INTERVAL = "1d"
 
 def download_stock_data(tickers):

@@ -72,7 +72,7 @@ def check_todays_action():
         # --- 1. 買い（ロング）の状態判定 ---
         if last_long is not None:
             if last_long['Action'] == "BUY_SIGNAL":
-                ohlc_data["Action"] = f"翌日始値で新規買：{last_long['Reason']}"
+                ohlc_data["Action"] = f"新規買：{last_long['Reason']}"
                 ohlc_data["Type"] = "NEW_LONG"
             
             elif last_long['Action'] == "HOLDING":
@@ -85,20 +85,20 @@ def check_todays_action():
                 days_held = len(df.loc[trade_date:])
                 
                 if days_held == 1:
-                    # 約定した当日の夜の判定（＝翌日は判定スキップして何もしない）
+                    # 約定した当日の夜の判定（＝は判定スキップして何もしない）
                     ohlc_data["Action"] = "スキップ"
                 else:
                     # 2日目以降の通常の逆指値計算
                     max_c = df.loc[trade_date:, 'Close'].max()
                     stop = max(round(max_c * 0.95, 1), round(buy_price * 0.95, 1))
-                    ohlc_data["Action"] = f"翌日逆指値：{stop}円"
+                    ohlc_data["Action"] = f"逆指値：{stop}円"
                 
                 ohlc_data["Type"] = "HOLD_LONG"
 
         # --- 2. 売り（ショート）の状態判定 ---
         if last_short is not None:
             if last_short['Action'] == "SHORT_SIGNAL":
-                ohlc_data["Action"] = f"翌日始値で新規売：{last_short['Reason']}"
+                ohlc_data["Action"] = f"新規売：{last_short['Reason']}"
                 ohlc_data["Type"] = "NEW_SHORT"
             
             elif last_short['Action'] == "HOLDING":
@@ -111,13 +111,13 @@ def check_todays_action():
                 days_held = len(df.loc[trade_date:])
                 
                 if days_held == 1:
-                    # 約定した当日の夜の判定（＝翌日は判定スキップして何もしない）
+                    # 約定した当日の夜の判定（＝は判定スキップして何もしない）
                     ohlc_data["Action"] = "スキップ"
                 else:
                     # 2日目以降の通常の逆指値計算
                     min_c = df.loc[trade_date:, 'Close'].min()
                     stop = min(round(min_c * 1.03, 1), round(sell_price * 1.05, 1))
-                    ohlc_data["Action"] = f"翌日逆指値：{stop}円"
+                    ohlc_data["Action"] = f"逆指値：{stop}円"
                     
                 ohlc_data["Type"] = "HOLD_SHORT"
 
