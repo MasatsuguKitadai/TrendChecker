@@ -42,33 +42,69 @@ def generate_dashboard():
                 --primary: #007bff; --bg: #ffffff; --sidebar-bg: #f8f9fa; --text: #212529; 
                 --border: #dee2e6; --up-color: #28a745; --down-color: #dc3545;
                 --not-owned-bg: #f2f2f2; --not-owned-text: #888;
+                --nav-height: 52px; /* ナビゲーションの高さを固定 */
             }}
-            body {{ font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; background: var(--bg); color: var(--text); overflow: hidden; }}
+            
+            body {{ 
+                font-family: 'Segoe UI', Roboto, sans-serif; 
+                margin: 0; 
+                background: var(--bg); 
+                color: var(--text); 
+                min-height: 100dvh; 
+            }}
             
             /* ヘッダー */
             .dashboard-header {{ background: #fff; padding: 15px 10px; text-align: center; border-bottom: 1px solid var(--border); }}
             .dashboard-header h1 {{ margin: 0; font-size: 1.2rem; color: #333; }}
-            .update-time {{ color: var(--primary); font-weight: bold; }}
 
             /* ナビゲーション */
-            .nav-bar {{ display: flex; background: #fff; border-bottom: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }}
-            .nav-item {{ flex: 1; text-align: center; padding: 14px; cursor: pointer; color: #6c757d; border-bottom: 3px solid transparent; font-weight: 500; }}
+            .nav-bar {{ 
+                display: flex; 
+                background: #fff; 
+                border-bottom: 1px solid var(--border); 
+                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                position: sticky;
+                top: 0;
+                z-index: 1000; /* 最前面 */
+                height: var(--nav-height);
+                box-sizing: border-box;
+            }}
+            .nav-item {{ flex: 1; text-align: center; line-height: var(--nav-height); cursor: pointer; color: #6c757d; border-bottom: 3px solid transparent; font-weight: 500; }}
             .nav-item.active {{ color: var(--primary); border-bottom-color: var(--primary); background: #f0f7ff; }}
             
-            /* コンテンツ */
-            .content-page {{ display: none; height: calc(100vh - 110px); overflow: auto; }}
-            .content-page.active {{ display: flex; }}
+            /* コンテンツエリア */
+            .content-page {{ 
+                display: none; 
+                min-height: calc(100dvh - 110px); 
+            }}
+            .content-page.active {{ display: block; }}
+            
             .container {{ width: 98%; max-width: 1000px; padding: 10px 2px; box-sizing: border-box; margin: 0 auto; }}
             
-            /* テーブル基本 */
-            table {{ width: 100%; border-collapse: collapse; background: #fff; font-size: 0.95em; }}
+            /* テーブル */
+            table {{ 
+                width: 100%; 
+                border-collapse: separate; /* stickyの境界線崩れ防止 */
+                border-spacing: 0;
+                background: #fff; 
+                font-size: 0.95em; 
+            }}
             th, td {{ padding: 12px 8px; border-bottom: 1px solid var(--border); }}
-            th {{ background: #f8f9fa; position: sticky; top: 0; z-index: 10; color: #495057; font-size: 0.85em; }}
+            
+            /* テーブルヘッダーの固定位置修正 */
+            th {{ 
+                background: #f8f9fa; 
+                position: sticky; 
+                top: var(--nav-height); /* ナビバーの真下に固定 */
+                z-index: 100; 
+                color: #495057; 
+                font-size: 0.85em; 
+                border-bottom: 2px solid var(--border);
+            }}
             
             .text-center {{ text-align: center !important; }}
             .text-left {{ text-align: left !important; }}
 
-            /* 行の状態スタイル */
             .row-not-owned {{ background-color: var(--not-owned-bg) !important; color: var(--not-owned-text); }}
             .row-summary {{ background-color: #e7f3ff; font-weight: bold; }}
             .gap-up {{ color: var(--up-color); font-weight: bold; }} 
@@ -77,7 +113,6 @@ def generate_dashboard():
             .new-signal {{ background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }}
             .hold-signal {{ background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }}
 
-            /* スイッチ */
             .switch {{ position: relative; display: inline-block; width: 40px; height: 20px; vertical-align: middle; }}
             .switch input {{ opacity: 0; width: 0; height: 0; }}
             .slider {{ position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }}
@@ -85,31 +120,28 @@ def generate_dashboard():
             input:checked + .slider {{ background-color: var(--primary); }}
             input:checked + .slider:before {{ transform: translateX(20px); }}
 
-            /* 詳細エリア(モバイル) */
             .detail-row {{ display: none; background-color: #fcfcfc; }}
-            .detail-container {{ 
-                padding: 10px 5px; 
-                display: flex; 
-                justify-content: space-around; 
-                align-items: center; 
-            }}
+            .detail-container {{ padding: 10px 5px; display: flex; justify-content: space-around; align-items: center; }}
             .detail-item {{ display: flex; flex-direction: column; align-items: center; flex: 1; }}
             .detail-label {{ font-size: 0.7em; color: #777; margin-bottom: 2px; white-space: nowrap; }}
 
-            /* PC用サイドバー/チャート */
-            #sidebar {{ width: 350px; background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; }}
-            #chart-area {{ flex: 1; background: #fff; position: relative; }}
-            iframe {{ width: 100%; height: 100%; border: none; }}
-
-            /* レスポンシブ制御 */
+            /* PC用レイアウト (Page 2のみFlexを使用) */
             @media (min-width: 769px) {{
                 .mobile-only {{ display: none !important; }}
+                #page-2.active {{ 
+                    display: flex; 
+                    height: calc(100dvh - (var(--nav-height) + 60px)); 
+                    overflow: hidden; 
+                }}
+                #sidebar {{ width: 350px; background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; }}
+                #chart-area {{ flex: 1; background: #fff; position: relative; }}
+                iframe {{ width: 100%; height: 100%; border: none; }}
             }}
 
             @media (max-width: 768px) {{
                 #nav-2 {{ display: none; }} 
                 .pc-only {{ display: none !important; }}
-                .content-page {{ height: calc(100vh - 95px); }}
+                .content-page {{ height: auto; }}
                 th, td {{ padding: 12px 6px; }}
                 .ticker-cell {{ display: flex; align-items: center; gap: 5px; }}
                 .arrow-icon {{ font-size: 0.7em; color: #aaa; }}
@@ -118,7 +150,7 @@ def generate_dashboard():
     </head>
     <body>
         <header class="dashboard-header">
-            <h1>Trend Checker ver2.0：{now_str}</span></h1>
+            <h1>Trend Checker ver2.0：{now_str}</h1>
         </header>
 
         <nav class="nav-bar">
@@ -156,8 +188,6 @@ def generate_dashboard():
 
         <script>
             const data = {json.dumps(actions_json)};
-            const nameMap = {json.dumps(name_map)};
-            const priceMap = {json.dumps(price_map)};
 
             function getOwnedStatus(ticker) {{
                 return localStorage.getItem('owned_' + ticker) === 'true';
@@ -173,6 +203,7 @@ def generate_dashboard():
             function toggleDetail(ticker) {{
                 if (window.innerWidth > 768) return;
                 const detailRow = document.getElementById('detail-' + ticker);
+                if (!detailRow) return;
                 const isVisible = detailRow.style.display === 'table-row';
                 detailRow.style.display = isVisible ? 'none' : 'table-row';
             }}
@@ -208,6 +239,7 @@ def generate_dashboard():
                         </label>
                     `;
 
+                    // PC用行
                     aBody.innerHTML += `
                         <tr class="${{rowClass}}" onclick="toggleDetail('${{r.Ticker}}')">
                             <td class="text-left">
