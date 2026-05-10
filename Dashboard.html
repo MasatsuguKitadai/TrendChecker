@@ -8,75 +8,41 @@
         <style>
             :root { 
                 --primary: #007bff; --bg: #ffffff; --sidebar-bg: #f8f9fa; --text: #212529; 
-                --border: #dee2e6; --up-color: #28a745; --down-color: #dc3545;
+                --border: #dee2e6; --up-color: #dc3545; --down-color: #007bff;
                 --not-owned-bg: #f2f2f2; --not-owned-text: #888;
-                --nav-height: 52px; /* ナビゲーションの高さを固定 */
+                --nav-height: 52px;
+                --font-main: 0.95rem;
             }
             
-            body { 
-                font-family: 'Segoe UI', Roboto, sans-serif; 
-                margin: 0; 
-                background: var(--bg); 
-                color: var(--text); 
-                min-height: 100dvh; 
-            }
+            body { font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; background: var(--bg); color: var(--text); }
             
             /* ヘッダー */
             .dashboard-header { background: #fff; padding: 15px 10px; text-align: center; border-bottom: 1px solid var(--border); }
             .dashboard-header h1 { margin: 0; font-size: 1.2rem; color: #333; }
 
-            /* ナビゲーション */
-            .nav-bar { 
-                display: flex; 
-                background: #fff; 
-                border-bottom: 1px solid var(--border); 
-                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-                position: sticky;
-                top: 0;
-                z-index: 1000; /* 最前面 */
-                height: var(--nav-height);
-                box-sizing: border-box;
-            }
-            .nav-item { flex: 1; text-align: center; line-height: var(--nav-height); cursor: pointer; color: #6c757d; border-bottom: 3px solid transparent; font-weight: 500; }
+            /* ナビゲーションバー（PC用） */
+            .nav-bar { display: flex; background: #fff; border-bottom: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000; height: var(--nav-height); }
+            .nav-item { flex: 1; text-align: center; line-height: var(--nav-height); cursor: pointer; color: #6c757d; font-weight: 500; border-bottom: 3px solid transparent; }
             .nav-item.active { color: var(--primary); border-bottom-color: var(--primary); background: #f0f7ff; }
             
-            /* コンテンツエリア */
-            .content-page { 
-                display: none; 
-                min-height: calc(100dvh - 110px); 
-            }
+            .content-page { display: none; min-height: calc(100dvh - 110px); }
             .content-page.active { display: block; }
+            .container { width: 98%; max-width: 1000px; padding: 10px 2px; margin: 0 auto; }
             
-            .container { width: 98%; max-width: 1000px; padding: 10px 2px; box-sizing: border-box; margin: 0 auto; }
+            /* テーブルスタイル */
+            table { width: 100%; border-collapse: separate; border-spacing: 0; background: #fff; }
+            th, td { padding: 12px 8px; border-bottom: 1px solid var(--border); font-size: var(--font-main); }
+            th { background: #f8f9fa; position: sticky; top: var(--nav-height); z-index: 100; font-size: 0.85em; border-bottom: 2px solid var(--border); }
             
-            /* テーブル */
-            table { 
-                width: 100%; 
-                border-collapse: separate; /* stickyの境界線崩れ防止 */
-                border-spacing: 0;
-                background: #fff; 
-                font-size: 0.95em; 
-            }
-            th, td { padding: 12px 8px; border-bottom: 1px solid var(--border); }
-            
-            /* テーブルヘッダーの固定位置修正 */
-            th { 
-                background: #f8f9fa; 
-                position: sticky; 
-                top: var(--nav-height); /* ナビバーの真下に固定 */
-                z-index: 100; 
-                color: #495057; 
-                font-size: 0.85em; 
-                border-bottom: 2px solid var(--border);
-            }
-            
-            .text-center { text-align: center !important; }
-            .text-left { text-align: left !important; }
+            /* 非保有銘柄のハイライト */
+            .row-not-owned { background-color: var(--not-owned-bg) !important; color: var(--not-owned-text) !important; }
+            .row-not-owned b, .row-not-owned small { color: var(--not-owned-text) !important; }
 
-            .row-not-owned { background-color: var(--not-owned-bg) !important; color: var(--not-owned-text); }
-            .row-summary { background-color: #e7f3ff; font-weight: bold; }
             .gap-up { color: var(--up-color); font-weight: bold; } 
             .gap-down { color: var(--down-color); font-weight: bold; } 
+            .rate-plus { color: var(--up-color); font-weight: bold; font-size: 0.85em; }
+            .rate-minus { color: var(--down-color); font-weight: bold; font-size: 0.85em; }
+
             .action-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold; background: #e9ecef; display: inline-block; white-space: nowrap; }
             .new-signal { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
             .hold-signal { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
@@ -88,39 +54,37 @@
             input:checked + .slider { background-color: var(--primary); }
             input:checked + .slider:before { transform: translateX(20px); }
 
+            /* プルダウン詳細 */
             .detail-row { display: none; background-color: #fcfcfc; }
-            .detail-container { padding: 10px 5px; display: flex; justify-content: space-around; align-items: center; }
+            .detail-container { padding: 12px 5px; display: flex; justify-content: space-around; align-items: center; }
             .detail-item { display: flex; flex-direction: column; align-items: center; flex: 1; }
-            .detail-label { font-size: 0.7em; color: #777; margin-bottom: 2px; white-space: nowrap; }
+            .detail-label { font-size: 0.85rem; color: #777; margin-bottom: 4px; }
+            .detail-value { font-size: 0.95rem; font-weight: bold; }
 
-            /* PC用レイアウト (Page 2のみFlexを使用) */
+            /* PC用レイアウト設定 */
             @media (min-width: 769px) {
-                .mobile-only { display: none !important; }
-                #page-2.active { 
-                    display: flex; 
-                    height: calc(100dvh - (var(--nav-height) + 60px)); 
-                    overflow: hidden; 
-                }
-                #sidebar { width: 350px; background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
-                #chart-area { flex: 1; background: #fff; position: relative; }
+                #page-2.active { display: flex; height: calc(100dvh - 115px); overflow: hidden; }
+                #sidebar { width: 350px; background: var(--sidebar-bg); border-right: 1px solid var(--border); overflow-y: auto; }
+                #chart-area { flex: 1; }
                 iframe { width: 100%; height: 100%; border: none; }
+                .mobile-only { display: none !important; }
             }
 
+            /* モバイル用レイアウト設定 */
             @media (max-width: 768px) {
-                #nav-2 { display: none; } 
+                /* ★ナビゲーションを非表示にし、ヘッダー直下からコンテンツを開始 */
+                .nav-bar { display: none !important; }
+                th { top: 0 !important; } /* ナビがないためsticky位置を0に */
+                
                 .pc-only { display: none !important; }
-                .content-page { height: auto; }
-                th, td { padding: 12px 6px; }
                 .ticker-cell { display: flex; align-items: center; gap: 5px; }
                 .arrow-icon { font-size: 0.7em; color: #aaa; }
             }
         </style>
     </head>
     <body>
-        <header class="dashboard-header">
-            <h1>Trend Checker ver2.0：2026/05/09</h1>
-        </header>
-
+        <header class="dashboard-header"><h1>Trend Checker：2026/05/10</h1></header>
+        
         <nav class="nav-bar">
             <div id="nav-1" class="nav-item active" onclick="showPage(1)">保有・アクション</div>
             <div id="nav-2" class="nav-item" onclick="showPage(2)">チャート分析</div>
@@ -131,16 +95,11 @@
                 <table>
                     <thead>
                         <tr class="pc-only">
-                            <th class="text-left">銘柄</th>
-                            <th class="text-center">終値</th>
-                            <th class="text-center">前日比</th>
-                            <th class="text-center">アクション</th>
-                            <th class="text-center" style="width:60px;">保有</th>
+                            <th align="center">銘柄</th><th align="center">終値</th>
+                            <th align="center">前日比</th><th align="center">アクション</th>
+                            <th align="center">保有</th>
                         </tr>
-                        <tr class="mobile-only">
-                            <th class="text-left">銘柄 (タップで詳細)</th>
-                            <th class="text-center">アクション</th>
-                        </tr>
+                        <tr class="mobile-only"><th align="center">銘柄</th><th align="center">アクション</th></tr>
                     </thead>
                     <tbody id="action-body"></tbody>
                 </table>
@@ -148,36 +107,28 @@
         </main>
 
         <main id="page-2" class="content-page">
-            <div id="sidebar">
-                <div id="ticker-list" style="overflow-y:auto; flex:1;"></div>
-            </div>
+            <div id="sidebar"><div id="ticker-list"></div></div>
             <div id="chart-area"><iframe id="frame" name="chart_frame"></iframe></div>
         </main>
 
         <script>
-            const data = [{"Ticker": "5857.T", "Name": "ARE HOLDINGS INC", "Open": 3980.0, "High": 4105.0, "Low": 3880.0, "Close": 4075.0, "GapText": "+65.0 (+1.62%)", "GapRaw": 65.0, "Action": "\u65b0\u898f\u8cb7\uff1a\u30b4\u30fc\u30eb\u30c7\u30f3\u30af\u30ed\u30b9", "Type": "NEW_LONG"}, {"Ticker": "6629.T", "Name": "TECHNO HORIZON CO LTD", "Open": 1201.0, "High": 1310.0, "Low": 1173.0, "Close": 1310.0, "GapText": "+122.0 (+10.27%)", "GapRaw": 122.0, "Action": "\u5f85\u6a5f", "Type": "IDLE"}, {"Ticker": "464A.T", "Name": "QPS HOLDINGS INC", "Open": 2647.0, "High": 2840.0, "Low": 2635.0, "Close": 2825.0, "GapText": "+149.0 (+5.57%)", "GapRaw": 149.0, "Action": "\u5f85\u6a5f", "Type": "IDLE"}, {"Ticker": "186A.T", "Name": "ASTROSCALE HOLDINGS INC", "Open": 1413.0, "High": 1570.0, "Low": 1388.0, "Close": 1570.0, "GapText": "+157.0 (+11.11%)", "GapRaw": 157.0, "Action": "\u65b0\u898f\u8cb7\uff1aMACD\u4e0a\u629c\u3051", "Type": "NEW_LONG"}, {"Ticker": "1605.T", "Name": "INPEX CORPORATION", "Open": 3803.0, "High": 3820.0, "Low": 3719.0, "Close": 3788.0, "GapText": "-62.0 (-1.61%)", "GapRaw": -62.0, "Action": "\u9006\u6307\u5024\uff1a3663.2\u5186", "Type": "HOLD_LONG"}, {"Ticker": "1893.T", "Name": "PENTA OCEAN CONSTRUCTION", "Open": 1857.0, "High": 1858.5, "Low": 1763.0, "Close": 1830.0, "GapText": "-10.0 (-0.54%)", "GapRaw": -10.0, "Action": "\u5f85\u6a5f", "Type": "IDLE"}, {"Ticker": "7014.T", "Name": "NAMURA SHIPBUILDING CO", "Open": 4050.0, "High": 4070.0, "Low": 3970.0, "Close": 3980.0, "GapText": "-75.0 (-1.85%)", "GapRaw": -75.0, "Action": "\u5f85\u6a5f", "Type": "IDLE"}, {"Ticker": "9412.T", "Name": "SKY PERFECT JSAT CORPORATION", "Open": 3530.0, "High": 3715.0, "Low": 3500.0, "Close": 3690.0, "GapText": "+205.0 (+5.88%)", "GapRaw": 205.0, "Action": "\u5f85\u6a5f", "Type": "IDLE"}];
+            const data = [{"Ticker": "5857.T", "Name": "ARE HOLDINGS INC", "Open": 3980.0, "High": 4105.0, "Low": 3880.0, "Close": 4075.0, "GapText": "+65.0 (+1.62%)", "GapRaw": 65.0, "Action": "\u9006\u6307\u5024\uff1a3871.2\u5186", "Type": "HOLD_LONG", "ProfitRate": 44.17}, {"Ticker": "6629.T", "Name": "TECHNO HORIZON CO LTD", "Open": 1201.0, "High": 1310.0, "Low": 1173.0, "Close": 1310.0, "GapText": "+122.0 (+10.27%)", "GapRaw": 122.0, "Action": "\u5f85\u6a5f", "Type": "IDLE", "ProfitRate": 63.96}, {"Ticker": "464A.T", "Name": "QPS HOLDINGS INC", "Open": 2647.0, "High": 2840.0, "Low": 2635.0, "Close": 2825.0, "GapText": "+149.0 (+5.57%)", "GapRaw": 149.0, "Action": "\u9006\u6307\u5024\uff1a2683.8\u5186", "Type": "HOLD_LONG", "ProfitRate": 44.24}, {"Ticker": "186A.T", "Name": "ASTROSCALE HOLDINGS INC", "Open": 1413.0, "High": 1570.0, "Low": 1388.0, "Close": 1570.0, "GapText": "+157.0 (+11.11%)", "GapRaw": 157.0, "Action": "\u65b0\u898f\u8cb7\uff1aMACD\u4e0a\u629c\u3051", "Type": "NEW_LONG", "ProfitRate": 64.09}, {"Ticker": "1605.T", "Name": "INPEX CORPORATION", "Open": 3803.0, "High": 3820.0, "Low": 3719.0, "Close": 3788.0, "GapText": "-62.0 (-1.61%)", "GapRaw": -62.0, "Action": "\u9006\u6307\u5024\uff1a3663.2\u5186", "Type": "HOLD_LONG", "ProfitRate": 22.37}, {"Ticker": "1893.T", "Name": "PENTA OCEAN CONSTRUCTION", "Open": 1857.0, "High": 1858.5, "Low": 1763.0, "Close": 1830.0, "GapText": "-10.0 (-0.54%)", "GapRaw": -10.0, "Action": "\u9006\u6307\u5024\uff1a1748.0\u5186", "Type": "HOLD_LONG", "ProfitRate": 29.98}, {"Ticker": "7014.T", "Name": "NAMURA SHIPBUILDING CO", "Open": 4050.0, "High": 4070.0, "Low": 3970.0, "Close": 3980.0, "GapText": "-75.0 (-1.85%)", "GapRaw": -75.0, "Action": "\u5f85\u6a5f", "Type": "IDLE", "ProfitRate": 14.7}, {"Ticker": "9412.T", "Name": "SKY PERFECT JSAT CORPORATION", "Open": 3530.0, "High": 3715.0, "Low": 3500.0, "Close": 3690.0, "GapText": "+205.0 (+5.88%)", "GapRaw": 205.0, "Action": "\u9006\u6307\u5024\uff1a3505.5\u5186", "Type": "HOLD_LONG", "ProfitRate": 52.45}];
 
-            function getOwnedStatus(ticker) {
-                return localStorage.getItem('owned_' + ticker) === 'true';
-            }
-
+            function getOwnedStatus(ticker) { return localStorage.getItem('owned_' + ticker) === 'true'; }
+            
             function toggleOwned(ticker, event) {
-                if(event) event.stopPropagation();
-                const current = getOwnedStatus(ticker);
-                localStorage.setItem('owned_' + ticker, !current);
+                event.stopPropagation();
+                localStorage.setItem('owned_' + ticker, !getOwnedStatus(ticker));
                 renderStatus();
             }
 
             function toggleDetail(ticker) {
                 if (window.innerWidth > 768) return;
-                const detailRow = document.getElementById('detail-' + ticker);
-                if (!detailRow) return;
-                const isVisible = detailRow.style.display === 'table-row';
-                detailRow.style.display = isVisible ? 'none' : 'table-row';
+                const el = document.getElementById('detail-' + ticker);
+                el.style.display = el.style.display === 'table-row' ? 'none' : 'table-row';
             }
 
             function showPage(n) {
-                if (window.innerWidth <= 768 && n === 2) return;
                 document.querySelectorAll('.nav-item, .content-page').forEach(el => el.classList.remove('active'));
                 document.getElementById('nav-'+n).classList.add('active');
                 document.getElementById('page-'+n).classList.add('active');
@@ -185,59 +136,35 @@
             }
 
             function renderStatus() {
-                const aBody = document.getElementById('action-body');
-                aBody.innerHTML = '';
-
+                const body = document.getElementById('action-body');
+                body.innerHTML = '';
                 data.forEach(r => {
-                    const isSummary = r.Ticker === 'SUMMARY';
                     const isOwned = getOwnedStatus(r.Ticker);
-                    const rowClass = (isSummary ? 'row-summary' : '') + (!isSummary && !isOwned ? ' row-not-owned' : '');
+                    const rowClass = !isOwned ? 'row-not-owned' : '';
                     const gapClass = r.GapRaw > 0 ? 'gap-up' : (r.GapRaw < 0 ? 'gap-down' : '');
+                    const rateClass = r.ProfitRate > 0 ? 'rate-plus' : (r.ProfitRate < 0 ? 'rate-minus' : '');
+                    const rateText = `<span class="${rateClass}"> (${r.ProfitRate > 0 ? '+':''}${r.ProfitRate}%)</span>`;
                     
-                    let badgeClass = 'action-badge';
-                    if (!isSummary) {
-                        if (r.Type.startsWith('NEW')) badgeClass += ' new-signal';
-                        else if (r.Action && (r.Action.includes('スキップ') || r.Action.includes('保持') || r.Action.includes('逆指値'))) badgeClass += ' hold-signal';
-                    }
+                    let bCls = 'action-badge';
+                    if (r.Type.startsWith('NEW')) bCls += ' new-signal';
+                    else if (r.Action.includes('保持') || r.Action.includes('逆指値')) bCls += ' hold-signal';
 
-                    const switchHtml = isSummary ? '' : `
-                        <label class="switch">
-                            <input type="checkbox" ${isOwned ? 'checked' : ''} onchange="toggleOwned('${r.Ticker}', event)">
-                            <span class="slider"></span>
-                        </label>
-                    `;
+                    const sw = `<label class="switch"><input type="checkbox" ${isOwned ? 'checked' : ''} onchange="toggleOwned('${r.Ticker}', event)"><span class="slider"></span></label>`;
 
-                    // PC用行
-                    aBody.innerHTML += `
+                    body.innerHTML += `
                         <tr class="${rowClass}" onclick="toggleDetail('${r.Ticker}')">
-                            <td class="text-left">
-                                <div class="ticker-cell">
-                                    <span class="mobile-only arrow-icon">▼</span>
-                                    <div><b>${r.Ticker}</b><br><small style="color:#666;">${r.Name}</small></div>
-                                </div>
-                            </td>
-                            <td class="text-center pc-only" style="font-weight:600;">${Math.floor(r.Close).toLocaleString()}</td>
-                            <td class="text-center pc-only ${gapClass}">${r.GapText}</td>
-                            <td class="text-center">
-                                <span class="${badgeClass}">${r.Action}</span>
-                            </td>
-                            <td class="text-center pc-only">${switchHtml}</td>
+                            <td align="left"><b>${r.Ticker}</b>${rateText}<br><small style="color:#666;">${r.Name}</small></td>
+                            <td align="center" class="pc-only" style="font-weight:600;">${Math.floor(r.Close).toLocaleString()}</td>
+                            <td align="center" class="pc-only ${gapClass}">${r.GapText}</td>
+                            <td align="center"><span class="${bCls}">${r.Action}</span></td>
+                            <td align="center" class="pc-only">${sw}</td>
                         </tr>
-                        <tr id="detail-${r.Ticker}" class="detail-row">
+                        <tr id="detail-${r.Ticker}" class="detail-row ${rowClass}">
                             <td colspan="5">
                                 <div class="detail-container">
-                                    <div class="detail-item">
-                                        <span class="detail-label">終値</span>
-                                        <b style="font-size: 0.9em;">${Math.floor(r.Close).toLocaleString()}</b>
-                                    </div>
-                                    <div class="detail-item">
-                                        <span class="detail-label">前日比</span>
-                                        <span class="${gapClass}" style="font-size: 0.9em;">${r.GapText}</span>
-                                    </div>
-                                    <div class="detail-item">
-                                        <span class="detail-label">保有</span>
-                                        ${switchHtml}
-                                    </div>
+                                    <div class="detail-item"><span class="detail-label">終値</span><span class="detail-value">${Math.floor(r.Close).toLocaleString()}</span></div>
+                                    <div class="detail-item"><span class="detail-label">前日比</span><span class="detail-value ${gapClass}">${r.GapText}</span></div>
+                                    <div class="detail-item"><span class="detail-label">保有</span>${sw}</div>
                                 </div>
                             </td>
                         </tr>
@@ -247,20 +174,16 @@
 
             function renderList() {
                 const list = document.getElementById('ticker-list');
-                list.innerHTML = '<div style="padding:15px; font-weight:bold; border-bottom:1px solid #ddd;">銘柄リスト (ロング)</div>';
-                data.filter(r => r.Ticker !== 'SUMMARY').forEach(r => {
+                list.innerHTML = '<div style="padding:15px; font-weight:bold; border-bottom:1px solid #ddd; font-size: 0.9rem;">銘柄リスト</div>';
+                data.forEach(r => {
+                    const rateClass = r.ProfitRate > 0 ? 'rate-plus' : (r.ProfitRate < 0 ? 'rate-minus' : '');
                     const div = document.createElement('div');
-                    div.style.cssText = 'padding:15px; border-bottom:1px solid #eee; cursor:pointer; transition:0.2s;';
-                    div.innerHTML = `<b>${r.Ticker}</b> <small>${r.Name}</small>`;
-                    div.onmouseover = () => div.style.background = "#f0f0f0";
-                    div.onmouseout = () => div.style.background = "transparent";
-                    div.onclick = () => {
-                        document.getElementById('frame').src = 'visualized_charts/chart_' + r.Ticker + '.html';
-                    };
+                    div.style.cssText = 'padding:15px; border-bottom:1px solid #eee; cursor:pointer; font-size: 0.95rem;';
+                    div.innerHTML = `<b>${r.Ticker}</b> <span class="${rateClass}">(${r.ProfitRate}%)</span><br><small style="color:#666;">${r.Name}</small>`;
+                    div.onclick = () => { document.getElementById('frame').src = 'visualized_charts/chart_' + r.Ticker + '.html'; };
                     list.appendChild(div);
                 });
             }
-
             renderStatus(); 
         </script>
     </body>

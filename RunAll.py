@@ -49,12 +49,10 @@ def main():
         "01_GetValue.py",         # 1. データ収集[cite: 3, 11]
         "02_Calculation.py",      # 2. 指標計算[cite: 4, 11]
         "03_Simulation.py",       # 3. 買いシミュレーション[cite: 9, 11]
-        "04_Check.py",            # 4. 買い可視化[cite: 6, 11]
-        # "05_Simulation_Short.py", # 5. 空売りシミュレーション[cite: 10, 11]
-        # "06_Check_Short.py",      # 6. 空売り可視化[cite: 4, 11]
-        "07_Results.py",          # 7. 明日のアクション指示[cite: 8, 11]
-        "08_CreateDashboard.py",  # 8. ダッシュボード生成[cite: 5, 11]
-        "09_SendEmail.py"
+        "04_PlotChart.py",            # 4. 買い可視化[cite: 6, 11]
+        "05_Summary.py",          # 7. 明日のアクション指示[cite: 8, 11]
+        "06_CreateDashboard.py",  # 8. ダッシュボード生成[cite: 5, 11]
+        "07_SendLINE.py"
     ]
 
     total_start_time = time.time()
@@ -66,7 +64,7 @@ def main():
         if run_script(script):
             success_count += 1
         else:
-            print(f"\n! 実行を中断します ({script} でエラーが発生しました)[cite: 11]")
+            print(f"\n! 実行を中断します ({script} でエラーが発生しました)")
             break
 
     total_end_time = time.time()
@@ -78,7 +76,7 @@ def main():
     
     if success_count == len(scripts):
         print("\n すべての工程が正常に完了しました！")
-        print(" Dashboard.html を開いて結果を確認してください。[cite: 11]")
+        print(" Dashboard.html を開いて結果を確認してください。")
     print(f"{'='*50}")
 
 if __name__ == "__main__":

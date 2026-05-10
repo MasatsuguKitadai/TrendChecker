@@ -47,7 +47,7 @@ def check_todays_action():
         p = df.iloc[-2] # 前日のデータ
         name = get_company_name(ticker)
 
-        # 前日比（ギャップ）の計算
+        # ★ 07側で前日比（ギャップ）を計算
         gap_price = round(c['Close'] - p['Close'], 1)
         gap_percent = round((c['Close'] / p['Close'] - 1) * 100, 2)
         gap_text = f"{'+' if gap_price > 0 else ''}{gap_price} ({'+' if gap_percent > 0 else ''}{gap_percent}%)"
@@ -59,74 +59,55 @@ def check_todays_action():
             "High": c['High'],
             "Low": c['Low'],
             "Close": c['Close'],
-            "GapText": gap_text,
-            "GapRaw": gap_price,
+            "GapText": gap_text,  # ダッシュボード表示用
+            "GapRaw": gap_price,   # カラー判定用
             "Action": "待機",
             "Type": "IDLE"
         }
 
-        # シミュレーション結果の参照
+        # シミュレーション結果の参照（ロング）
         last_long = get_last_trade(LONG_RESULT_DIR, ticker)
-        last_short = get_last_trade(SHORT_RESULT_DIR, ticker)
-
-        # --- 1. 買い（ロング）の状態判定 ---
         if last_long is not None:
             if last_long['Action'] == "BUY_SIGNAL":
                 ohlc_data["Action"] = f"新規買：{last_long['Reason']}"
                 ohlc_data["Type"] = "NEW_LONG"
-            
             elif last_long['Action'] == "HOLDING":
                 t_df = pd.read_csv(os.path.join(LONG_RESULT_DIR, f"{ticker}_trades.csv"))
                 buy_row = t_df[t_df['Action'] == 'BUY'].iloc[-1]
-                buy_price = buy_row['Price']
-                trade_date = pd.to_datetime(buy_row['Date'])
-                
-                # エントリー日からの経過日数を判定
+                buy_price, trade_date = buy_row['Price'], pd.to_datetime(buy_row['Date'])
                 days_held = len(df.loc[trade_date:])
-                
                 if days_held == 1:
-                    # 約定した当日の夜の判定（＝は判定スキップして何もしない）
-                    ohlc_data["Action"] = "スキップ"
+                    ohlc_data["Action"] = "保持（約定日）"
                 else:
-                    # 2日目以降の通常の逆指値計算
                     max_c = df.loc[trade_date:, 'Close'].max()
                     stop = max(round(max_c * 0.95, 1), round(buy_price * 0.95, 1))
                     ohlc_data["Action"] = f"逆指値：{stop}円"
-                
                 ohlc_data["Type"] = "HOLD_LONG"
 
-        # --- 2. 売り（ショート）の状態判定 ---
+        # シミュレーション結果の参照（ショート）
+        last_short = get_last_trade(SHORT_RESULT_DIR, ticker)
         if last_short is not None:
             if last_short['Action'] == "SHORT_SIGNAL":
                 ohlc_data["Action"] = f"新規売：{last_short['Reason']}"
                 ohlc_data["Type"] = "NEW_SHORT"
-            
             elif last_short['Action'] == "HOLDING":
                 t_df = pd.read_csv(os.path.join(SHORT_RESULT_DIR, f"{ticker}_trades.csv"))
                 sell_row = t_df[t_df['Action'] == 'SHORT_SELL'].iloc[-1]
-                sell_price = sell_row['Price']
-                trade_date = pd.to_datetime(sell_row['Date'])
-                
-                # エントリー日からの経過日数を判定
+                sell_price, trade_date = sell_row['Price'], pd.to_datetime(sell_row['Date'])
                 days_held = len(df.loc[trade_date:])
-                
                 if days_held == 1:
-                    # 約定した当日の夜の判定（＝は判定スキップして何もしない）
-                    ohlc_data["Action"] = "スキップ"
+                    ohlc_data["Action"] = "保持（約定日）"
                 else:
-                    # 2日目以降の通常の逆指値計算
                     min_c = df.loc[trade_date:, 'Close'].min()
                     stop = min(round(min_c * 1.03, 1), round(sell_price * 1.05, 1))
                     ohlc_data["Action"] = f"逆指値：{stop}円"
-                    
                 ohlc_data["Type"] = "HOLD_SHORT"
 
         actions_list.append(ohlc_data)
 
-    # 結果の保存
     os.makedirs(os.path.dirname(ACTION_FILE), exist_ok=True)
     pd.DataFrame(actions_list).to_csv(ACTION_FILE, index=False)
-    print(f"◎ アドバイザー指示書を更新しました。\n")
+    print(f"◎ アドバイザー指示書を更新しました (前日比データを含む)。\n")
 
 if __name__ == "__main__":
     check_todays_action()

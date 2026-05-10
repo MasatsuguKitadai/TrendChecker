@@ -11,6 +11,9 @@ RESULT_DIR = "simulation_results"
 # --- シミュレーション期間 ---
 SIM_MONTHS = 6
 
+# --- 取引設定 ---
+LOT_SIZE = 100                # 購入株数
+
 # --- エントリー条件 ---
 TREND_THRESHOLD = -0.01       # MA25の傾き許容閾値 (-0.01 = -1%)
 GAP_DOWN_LIMIT = 0.99         # ギャップダウン許容範囲 (前日安値の99%以上)
@@ -47,15 +50,21 @@ def run_realistic_simulation_auto():
         latest_date = df.index.max()
         sim_start_date = latest_date - pd.DateOffset(months=SIM_MONTHS)
         
-        start_idx = df.index.get_indexer([sim_start_date], method='bfill')[0]
+        try:
+            start_idx = df.index.get_indexer([sim_start_date], method='bfill')[0]
+        except:
+            start_idx = 1
+            
         if start_idx < 1:
             start_idx = 1
+
+        base_price = df['Close'].iloc[start_idx]
             
         position = 0
         buy_price = 0
         max_close_since_buy = 0
         trailing_active = False 
-        total_profit = 0
+        total_profit_per_share = 0 
         trade_history = []
         holding_days = 0 
 
@@ -75,11 +84,9 @@ def run_realistic_simulation_auto():
                 next_date = df.index[i+1]
                 next_open = df['Open'].iloc[i+1]
                 next_low = df['Low'].iloc[i+1]   
-                is_sim_end_day = (i + 1 == len(df) - 1)
             
             # --- 【エントリー判定】 ---
             if position == 0:
-                # MA25の傾き（前日比の騰落率）
                 ma_slope_rate = (c_ma_m - p_ma_m) / p_ma_m
                 is_trend_acceptable = (ma_slope_rate >= TREND_THRESHOLD)
                 
@@ -118,6 +125,7 @@ def run_realistic_simulation_auto():
             elif position == 1:
                 holding_days += 1
                 
+                # ★ 最終日の判定：強制売却せず、Holdingとして記録
                 if is_latest_data:
                     trade_history.append({
                         "Date": df.index[i].date(), "Action": "HOLDING",
@@ -142,20 +150,16 @@ def run_realistic_simulation_auto():
                     
                     if next_low <= hard_stop_price:
                         sell_trigger = True
-                        sell_reason = "HARD_STOP"
+                        sell_reason = f"ハードストップ({(1 - HARD_STOP_LOSS) *100:.1f}%)"
                         sell_price = next_open if next_open <= hard_stop_price else hard_stop_price
                     elif trailing_active and (next_low <= stop_price):
                         sell_trigger = True
-                        sell_reason = f"TRAILING_STOP({stop_price})"
+                        sell_reason = f"トレーリングストップ({(1 - TRAILING_STOP_LOSS) *100:.1f}%)"
                         sell_price = next_open if next_open <= stop_price else stop_price
-                    elif is_sim_end_day:
-                        sell_trigger = True
-                        sell_reason = "FINAL_SELL"
-                        sell_price = df['Close'].iloc[i+1]
 
                     if sell_trigger:
                         profit = round(sell_price - buy_price, 1)
-                        total_profit += profit
+                        total_profit_per_share += profit
                         trade_history.append({
                             "Date": next_date.date(), "Action": "SELL",
                             "Price": sell_price, "Reason": sell_reason, "Profit": profit
@@ -169,19 +173,22 @@ def run_realistic_simulation_auto():
         result_df = pd.DataFrame(trade_history, columns=["Date", "Action", "Price", "Reason", "Profit"])
         result_df.to_csv(f"{RESULT_DIR}/{ticker}_trades.csv", index=False)
         
-        total_profit = round(total_profit, 1)
+        total_profit_jpy = round(total_profit_per_share * LOT_SIZE, 0)
+        profit_rate = round((total_profit_per_share / base_price) * 100, 2)
         trade_count = len(result_df[result_df['Action'].isin(['BUY', 'SELL'])]) // 2
         
         summary_reports.append({
             "Ticker": ticker,
-            "Total_Profit": total_profit,
+            "Base_Price": base_price,
+            "Total_Profit_JPY": total_profit_jpy,
+            "Profit_Rate_Pct": profit_rate,
             "Trade_Count": trade_count
         })
-        print(f"◎ {ticker}: 完了 (損益 {total_profit:,.1f}円)")
+        print(f"◎ {ticker}: 完了 (利益率: {profit_rate}%)")
 
     summary_df = pd.DataFrame(summary_reports)
     summary_df.to_csv(f"{RESULT_DIR}/overall_summary.csv", index=False)
-    print(f"\n--- シミュレーション完了 ---")
+    print(f"\n--- シミュレーション完了 (結果は {RESULT_DIR} 内を確認) ---")
 
 if __name__ == "__main__":
     run_realistic_simulation_auto()
