@@ -27,15 +27,6 @@ jobs:
         run: |
           pip install pandas yfinance plotly requests
 
-      - name: Run Analysis
-        env:
-          GMAIL_USER: ${{ secrets.GMAIL_USER }}
-          GMAIL_PASS: ${{ secrets.GMAIL_PASS }}
-          RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
-          GH_PAGES_URL: ${{ secrets.GH_PAGES_URL }}
-        run: python RunAll.py
-
-      # ★ LINE通知ステップを追加
       - name: Send LINE Notification
         env:
           LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
