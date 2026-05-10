@@ -3,7 +3,6 @@ import os
 
 def send_line_notification():
     # 環境変数から設定を読み込み
-    # LINE Developersで取得したトークンとIDを設定
     LINE_TOKEN = os.environ.get("LINE_CHANNEL_ACCESS_TOKEN")
     USER_ID = os.environ.get("LINE_USER_ID")
     
@@ -22,19 +21,21 @@ def send_line_notification():
 {GH_PAGES_URL}"""
 
     url = "https://api.line.me/v2/bot/message/push"
-    headers = {{
+    # ★ 修正箇所：波括弧を1つにする
+    headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {{LINE_TOKEN}}"
-    }}
-    payload = {{
+        "Authorization": f"Bearer {LINE_TOKEN}"
+    }
+    # ★ 修正箇所：波括弧を1つにする
+    payload = {
         "to": USER_ID,
         "messages": [
-            {{
+            {
                 "type": "text",
                 "text": message_text
-            }}
+            }
         ]
-    }}
+    }
 
     # 送信実行
     try:
@@ -42,9 +43,9 @@ def send_line_notification():
         if response.status_code == 200:
             print("◎ LINE通知が完了しました。")
         else:
-            print(f"× LINE通知失敗: {{response.status_code}} {{response.text}}")
+            print(f"× LINE通知失敗: {response.status_code} {response.text}")
     except Exception as e:
-        print(f"× 通信エラー: {{e}}")
+        print(f"× 通信エラー: {e}")
 
 if __name__ == "__main__":
     send_line_notification()
