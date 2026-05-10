@@ -23,8 +23,8 @@ jobs:
           python-version: "3.10"
 
       - name: Install dependencies
+        # ★ LINE通知に必要な requests を追加
         run: |
-          # ★ LINE通知に必要な requests を追加
           pip install pandas yfinance plotly requests
 
       - name: Run Analysis
