@@ -52,7 +52,6 @@ def main():
         "04_PlotChart.py",            # 4. 買い可視化[cite: 6, 11]
         "05_Summary.py",          # 7. 明日のアクション指示[cite: 8, 11]
         "06_CreateDashboard.py",  # 8. ダッシュボード生成[cite: 5, 11]
-        "07_SendLINE.py"
     ]
 
     total_start_time = time.time()

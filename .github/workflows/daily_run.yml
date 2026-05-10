@@ -27,12 +27,17 @@ jobs:
         run: |
           pip install pandas yfinance plotly requests
 
+      - name:
+          Run All Analysis
+          # RunAll.py が 03 -> 07 -> 04 -> 08 を順番に実行します
+        run: python RunAll.py
+
       - name: Send LINE Notification
         env:
           LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
           LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
           GH_PAGES_URL: ${{ secrets.GH_PAGES_URL }}
-        run: python 09_SendLine.py
+        run: python 07_SendLine.py
 
       - name: Prepare for Deployment
         run: |
