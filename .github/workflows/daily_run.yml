@@ -2,14 +2,15 @@ name: Daily Stock Analysis
 
 on:
   schedule:
-    - cron: "0 7 * * *" # 日本時間 16:00
+    # 日本時間の15:47は、UTC（協定世界時）の06:47です (JST - 9時間 = UTC)
+    - cron: "47 6 * * *"
   workflow_dispatch:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 permissions:
-  contents: write
+  contents: write # リポジトリへのPushとGitHub Pagesへのデプロイに必須の権限
 
 jobs:
   build:
@@ -23,13 +24,11 @@ jobs:
           python-version: "3.10"
 
       - name: Install dependencies
-        # ★ LINE通知に必要な requests を追加
         run: |
           pip install pandas yfinance plotly requests
 
-      - name:
-          Run All Analysis
-          # RunAll.py が 03 -> 07 -> 04 -> 08 を順番に実行します
+      - name: Run All Analysis
+        # RunAll.py が 03 -> 07 -> 04 -> 08 を順番に実行します
         run: python RunAll.py
 
       - name: Send LINE Notification
@@ -38,6 +37,18 @@ jobs:
           LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
           GH_PAGES_URL: ${{ secrets.GH_PAGES_URL }}
         run: python 07_SendLINE.py
+
+      # ★ 追加：生成されたファイル（Dashboard.html等）をリポジトリに保存（Push）する
+      - name: Commit and Push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add .
+          # 変更があった場合のみコミット＆プッシュを実行する（エラー回避のため）
+          if ! git diff --cached --quiet; then
+            git commit -m "Update analysis results [skip ci]"
+            git push
+          fi
 
       - name: Prepare for Deployment
         run: |
