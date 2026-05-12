@@ -3,24 +3,42 @@ import pandas as pd
 import os
 
 # --- 設定 ---
-# 解析対象の銘柄リスト
-TICKERS = ["1605.T", "1893.T", "464A.T", "186A.T", "6629.T", "9412.T", "5857.T", "7014.T"]
+TICKERS_FILE = "tickers.txt"
 INTERVAL = "1d"
+
+def load_tickers(file_path):
+    """
+    外部テキストファイルから銘柄リストを読み込む。
+    '#' 以降のコメントおよび空行を除外する。
+    """
+    if not os.path.exists(file_path):
+        print(f"× エラー: {file_path} が見つかりません。")
+        return []
+    
+    tickers = []
+    with open(file_path, "r", encoding="utf-8") as f:
+        for line in f:
+            # '#' で分割して最初の要素（銘柄コード部分）だけを取得し、空白を除去
+            ticker = line.split('#')[0].strip()
+            
+            # 抽出した結果が空でなければ（銘柄コードがあれば）追加
+            if ticker:
+                tickers.append(ticker)
+    return tickers
 
 def download_stock_data(tickers):
     """
-    yfinanceを使用して株価データをダウンロードし、
-    直近10ヶ月分の始値・高値・安値・終値をCSVとして保存する。
+    yfinanceを使用して株価データをダウンロードし、CSVとして保存する。
     """
-    # 保存用フォルダの作成
+    if not tickers:
+        print("実行対象の銘柄がありません。")
+        return
+
     os.makedirs("data", exist_ok=True)
-    
-    print(f"--- データ収集開始 (直近10ヶ月分 / 始値・高値・安値・終値) ---")
+    print(f"--- データ収集開始 (対象: {len(tickers)}銘柄) ---")
     
     for ticker in tickers:
         try:
-            # print(f"取得中: {ticker}...")
-            # 余裕を持って1年分（1y）の履歴データを取得[cite: 3]
             stock = yf.Ticker(ticker)
             df = stock.history(period="1y", interval=INTERVAL)
             
@@ -28,21 +46,20 @@ def download_stock_data(tickers):
                 print(f"× {ticker}: データが見つかりません。")
                 continue
             
-            # 【新規追加】直近8ヶ月分のみに絞り込む
-            latest_date = df.index.max() # データ内の最新日付を取得
-            start_date = latest_date - pd.DateOffset(months=10) # 10ヶ月前の日付を算出
-            df = df[df.index >= start_date] # 8ヶ月前以降のデータのみ抽出
+            # 直近10ヶ月分に絞り込み
+            latest_date = df.index.max()
+            start_date = latest_date - pd.DateOffset(months=10)
+            df = df[df.index >= start_date]
             
-            # 必要な4本値（Open, High, Low, Close）に絞り込む
-            df_selected = df[['Open', 'High', 'Low', 'Close']]
-            
-            # CSV形式で保存
+            # CSV保存
             file_path = f"data/{ticker}.csv"
-            df_selected.to_csv(file_path)
-            print(f"◎ {ticker}: 保存完了 (データ件数: {len(df_selected)}日分) -> {file_path}")
+            df[['Open', 'High', 'Low', 'Close']].to_csv(file_path)
+            print(f"◎ {ticker}: 保存完了")
             
         except Exception as e:
             print(f"! {ticker} 取得エラー: {e}")
 
 if __name__ == "__main__":
-    download_stock_data(TICKERS)
+    # Python を使用したツール開発の効率を高めるため、設定を外部化
+    target_tickers = load_tickers(TICKERS_FILE)
+    download_stock_data(target_tickers)
