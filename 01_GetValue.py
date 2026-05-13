@@ -1,9 +1,11 @@
 import yfinance as yf
 import pandas as pd
 import os
+import sys
 
 # --- 設定 ---
-TICKERS_FILE = "tickers.txt"
+# コマンドライン引数があれば第1引数をリストファイルとし、なければデフォルトを使用
+TICKERS_FILE = sys.argv[1] if len(sys.argv) > 1 else "tickers.txt"
 INTERVAL = "1d"
 
 def load_tickers(file_path):
@@ -18,10 +20,7 @@ def load_tickers(file_path):
     tickers = []
     with open(file_path, "r", encoding="utf-8") as f:
         for line in f:
-            # '#' で分割して最初の要素（銘柄コード部分）だけを取得し、空白を除去
             ticker = line.split('#')[0].strip()
-            
-            # 抽出した結果が空でなければ（銘柄コードがあれば）追加
             if ticker:
                 tickers.append(ticker)
     return tickers
@@ -35,7 +34,7 @@ def download_stock_data(tickers):
         return
 
     os.makedirs("data", exist_ok=True)
-    print(f"--- データ収集開始 (対象: {len(tickers)}銘柄) ---")
+    print(f"--- データ収集開始 (対象: {len(tickers)}銘柄 / 読み込みファイル: {TICKERS_FILE}) ---")
     
     for ticker in tickers:
         try:
@@ -60,6 +59,5 @@ def download_stock_data(tickers):
             print(f"! {ticker} 取得エラー: {e}")
 
 if __name__ == "__main__":
-    # Python を使用したツール開発の効率を高めるため、設定を外部化
     target_tickers = load_tickers(TICKERS_FILE)
     download_stock_data(target_tickers)
