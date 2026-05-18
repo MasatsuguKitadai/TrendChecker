@@ -16,7 +16,7 @@ def run_script(script_name, args=None):
         cmd.extend(args)
         
     try:
-        result = subprocess.run(cmd, check=True)
+        subprocess.run(cmd, check=True)
         end_time = time.time()
         print(f"\n[成功] {script_name} (実行時間: {end_time - start_time:.2f}秒)")
         return True
@@ -25,10 +25,9 @@ def run_script(script_name, args=None):
         return False
 
 def main():
-    # スクリーニング専用のファイル名を指定
+    # 読み込むスクリーニング用の銘柄リスト
     SCREENING_LIST = "tickers_screening.txt"
     
-    # スクリーニング時はダッシュボード系を出力しないため、データ関連のみ削除
     clean_dirs = ["data", "calculated_data", "simulation_results"]
 
     print("スクリーニング環境を初期化しています（古いデータの削除）...")
@@ -37,15 +36,15 @@ def main():
             try:
                 shutil.rmtree(d)
                 print(f" - 削除完了: {d}")
-            except Exception as e:
+            except Exception:
                 pass
 
-    # スクリーニング用プロセス（チャート生成やダッシュボード生成は省く）
+    # 実行するプロセス（チャート可視化などは除外）
     scripts = [
-        ("01_GetValue.py", [SCREENING_LIST]),  # 引数としてスクリーニング用リストを渡す
-        ("02_Calculation.py", []),
-        ("03_Simulation.py", []),
-        # ("04_Screening.py", []) # ★次に作成するスクリーニング評価用スクリプト
+        ("01_GetValue.py", [SCREENING_LIST]),  # 引数でリストを切り替え
+        ("02_Calculation.py", []),             # 通常の指標計算
+        ("03_Simulation.py", []),              # 通常のシミュレーション
+        ("08_Screening.py", [])                # ★今回作成した抽出スクリプト
     ]
 
     total_start_time = time.time()
@@ -61,7 +60,8 @@ def main():
             break
 
     total_end_time = time.time()
-    print(f"\n スクリーニング基盤構築完了 (実行時間: {total_end_time - total_start_time:.2f}秒)")
+    print(f"\n スクリーニングプロセス完了 (実行時間: {total_end_time - total_start_time:.2f}秒)")
+    print(" 出力された screened_tickers.txt の内容を tickers.txt にコピーして日次監視に追加できます。")
 
 if __name__ == "__main__":
     main()
