@@ -80,8 +80,11 @@ def check_todays_action():
                     ohlc_data["Action"] = "保持（約定日）"
                 else:
                     max_c = df.loc[trade_date:, 'Close'].max()
-                    stop = max(round(max_c * 0.95, 1), round(buy_price * 0.95, 1))
-                    ohlc_data["Action"] = f"逆指値：{stop}円"
+                    if max_c >= buy_price * 1.05:  # 03の PROFIT_TARGET_TRAILING と同期
+                        stop = max(round(max_c * 0.95, 1), round(buy_price * 0.95, 1))
+                    else:
+                        stop = round(buy_price * 0.95, 1)  # 5%に達するまでは初期のハードストップのみ
+                ohlc_data["Action"] = f"逆指値：{stop}円"
                 ohlc_data["Type"] = "HOLD_LONG"
 
         # シミュレーション結果の参照（ショート）
