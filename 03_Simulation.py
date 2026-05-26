@@ -56,7 +56,7 @@ def run_realistic_simulation_auto():
             
         if start_idx < 1: start_idx = 1
 
-        # --- 変数初期化（変更箇所） ---
+        # --- 変数初期化 ---
         current_capital = INITIAL_CAPITAL_RATE # 1.0からスタート
         position = 0
         buy_price = 0
@@ -108,7 +108,6 @@ def run_realistic_simulation_auto():
                             "Price": c_close, "Reason": entry_reason, "Profit": 0, "Capital": round(current_capital, 4)
                         })
                     else:
-                        # 変更: 株数の計算を廃止。全額を端数許容で投資したとみなす
                         buy_price = next_open
                         position = 1
                         max_close_since_buy = 0
@@ -129,13 +128,18 @@ def run_realistic_simulation_auto():
                         "Price": c_close, "Reason": "POS_OPEN", "Profit": 0, "Capital": round(current_capital, 4)
                     })
                 else:
-                    if holding_days <= 1: continue
-
+                    # 初日であっても最高値の更新とトレイル発動の判定を最初に行う
                     if c_close > max_close_since_buy:
                         max_close_since_buy = c_close
                     
                     if not trailing_active and (c_close >= buy_price * PROFIT_TARGET_TRAILING):
                         trailing_active = True
+                    
+                    # 【ルール変更箇所】
+                    # 原則として初日は売却をスキップするが、5%を超えてトレイルが発動した場合は
+                    # スキップせずにそのまま下の売却判定に進む
+                    if holding_days <= 1 and not trailing_active:
+                        continue
                     
                     sell_trigger = False
                     sell_reason = ""
@@ -154,11 +158,8 @@ def run_realistic_simulation_auto():
                         sell_price = next_open if next_open <= stop_price else stop_price
 
                     if sell_trigger:
-                        # ★変更1: Profitを単体の値幅（売却金額 - 取得金額）にする
                         profit_per_share = round(sell_price - buy_price, 2)
                         
-                        # ★変更2: 理論上最大の枚数を投資（端数許容）するため、
-                        # リターン率（売却金額 / 取得金額）をそのまま掛け合わせて累積率を更新する
                         trade_return_rate = sell_price / buy_price
                         current_capital *= trade_return_rate
                         
@@ -175,7 +176,6 @@ def run_realistic_simulation_auto():
         result_df = pd.DataFrame(trade_history)
         result_df.to_csv(f"{RESULT_DIR}/{ticker}_trades.csv", index=False)
         
-        # 最終統計 (エラーが出ないようカラム構成は維持し、中身を率ベースに調整)
         profit_rate_pct = round((current_capital - 1.0) * 100, 2)
         trade_count = len(result_df[result_df['Action'] == 'SELL'])
         
@@ -183,7 +183,7 @@ def run_realistic_simulation_auto():
             "Ticker": ticker,
             "Initial_Capital": INITIAL_CAPITAL_RATE,
             "Final_Capital": round(current_capital, 4),
-            "Total_Profit_JPY": 0,  # 金額廃止のため0固定
+            "Total_Profit_JPY": 0,
             "Profit_Rate_Pct": profit_rate_pct,
             "Trade_Count": trade_count
         })
