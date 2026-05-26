@@ -1,12 +1,33 @@
 import pandas as pd
 import os
 import yfinance as yf
+import importlib  # ★数字から始まるファイルからインポートするために使用
 
 # --- 設定 ---
 DATA_DIR = "calculated_data"
 LONG_RESULT_DIR = "simulation_results"
 SHORT_RESULT_DIR = "simulation_results_short"
 ACTION_FILE = "simulation_results/todays_actions.csv"
+
+# =====================================================================
+# ★【自動同期ロジック】03_Simulation.py から定数を動的に読み込む
+# =====================================================================
+try:
+    # 同一ディレクトリにある「03_Simulation.py」をモジュールとして読み込み
+    sim_03 = importlib.import_module("03_Simulation")
+    
+    PROFIT_TARGET_TRAILING = sim_03.PROFIT_TARGET_TRAILING  # 初期値: 1.05
+    HARD_STOP_LOSS = sim_03.HARD_STOP_LOSS                  # 初期値: 0.95
+    TRAILING_STOP_LOSS = sim_03.TRAILING_STOP_LOSS          # 初期値: 0.95
+    print(f"◎ 03_Simulation.py からルールを自動同期しました。")
+    print(f"   (利確トリガー: {PROFIT_TARGET_TRAILING}, 損切: {HARD_STOP_LOSS}, トレイル: {TRAILING_STOP_LOSS})")
+except Exception as e:
+    # 万が一読み込めなかった場合のフォールバック（予備設定）
+    PROFIT_TARGET_TRAILING = 1.05
+    HARD_STOP_LOSS = 0.95
+    TRAILING_STOP_LOSS = 0.95
+    print(f"※ 03_Simulation.py からの同期に失敗したため、デフォルト値で動作します。理由: {e}")
+# =====================================================================
 
 def get_company_name(ticker):
     """yfinanceを使用して銘柄名を取得する"""
@@ -47,7 +68,7 @@ def check_todays_action():
         p = df.iloc[-2] # 前日のデータ
         name = get_company_name(ticker)
 
-        # ★ 07側で前日比（ギャップ）を計算
+        # 前日比（ギャップ）を計算
         gap_price = round(c['Close'] - p['Close'], 1)
         gap_percent = round((c['Close'] / p['Close'] - 1) * 100, 2)
         gap_text = f"{'+' if gap_price > 0 else ''}{gap_price} ({'+' if gap_percent > 0 else ''}{gap_percent}%)"
@@ -59,8 +80,8 @@ def check_todays_action():
             "High": c['High'],
             "Low": c['Low'],
             "Close": c['Close'],
-            "GapText": gap_text,  # ダッシュボード表示用
-            "GapRaw": gap_price,   # カラー判定用
+            "GapText": gap_text,
+            "GapRaw": gap_price,
             "Action": "待機",
             "Type": "IDLE"
         }
@@ -76,15 +97,20 @@ def check_todays_action():
                 buy_row = t_df[t_df['Action'] == 'BUY'].iloc[-1]
                 buy_price, trade_date = buy_row['Price'], pd.to_datetime(buy_row['Date'])
                 days_held = len(df.loc[trade_date:])
-                if days_held == 1:
+                
+                # 購入日以降の最高終値を取得
+                max_c = df.loc[trade_date:, 'Close'].max()
+                
+                # ★【03から同期した変数に置き換え】
+                if max_c >= buy_price * PROFIT_TARGET_TRAILING:  
+                    stop = max(round(max_c * TRAILING_STOP_LOSS, 1), round(buy_price * HARD_STOP_LOSS, 1))
+                    ohlc_data["Action"] = f"逆指値：{stop}円"
+                elif days_held == 1:
                     ohlc_data["Action"] = "保持（約定日）"
                 else:
-                    max_c = df.loc[trade_date:, 'Close'].max()
-                    if max_c >= buy_price * 1.05:  # 03の PROFIT_TARGET_TRAILING と同期
-                        stop = max(round(max_c * 0.95, 1), round(buy_price * 0.95, 1))
-                    else:
-                        stop = round(buy_price * 0.95, 1)  # 5%に達するまでは初期のハードストップのみ
-                ohlc_data["Action"] = f"逆指値：{stop}円"
+                    stop = round(buy_price * HARD_STOP_LOSS, 1)
+                    ohlc_data["Action"] = f"逆指値：{stop}円"
+                    
                 ohlc_data["Type"] = "HOLD_LONG"
 
         # シミュレーション結果の参照（ショート）
