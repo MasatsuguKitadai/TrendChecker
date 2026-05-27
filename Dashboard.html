@@ -44,8 +44,12 @@
             .rate-minus { color: var(--down-color); font-weight: bold; font-size: 0.85em; }
 
             .action-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold; background: #e9ecef; display: inline-block; white-space: nowrap; }
+            
+            /* ロング・ショート別のカラーバッジ設定 */
             .new-signal { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
             .hold-signal { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+            .new-short-signal { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+            .hold-short-signal { background: #cce5ff; color: #004085; border: 1px solid #b8daff; }
 
             .switch { position: relative; display: inline-block; width: 40px; height: 20px; vertical-align: middle; }
             .switch input { opacity: 0; width: 0; height: 0; }
@@ -72,9 +76,8 @@
 
             /* モバイル用レイアウト設定 */
             @media (max-width: 768px) {
-                /* ★ナビゲーションを非表示にし、ヘッダー直下からコンテンツを開始 */
                 .nav-bar { display: none !important; }
-                th { top: 0 !important; } /* ナビがないためsticky位置を0に */
+                th { top: 0 !important; } 
                 
                 .pc-only { display: none !important; }
                 .ticker-cell { display: flex; align-items: center; gap: 5px; }
@@ -83,7 +86,7 @@
         </style>
     </head>
     <body>
-        <header class="dashboard-header"><h1>Trend Checker：2026/05/27</h1></header>
+        <header class="dashboard-header"><h1>Trend Checker：2026/05/28</h1></header>
         
         <nav class="nav-bar">
             <div id="nav-1" class="nav-item active" onclick="showPage(1)">保有・アクション</div>
@@ -112,7 +115,9 @@
         </main>
 
         <script>
-            const data = [{"Ticker": "7182.T", "Name": "JAPAN POST BANK CO LTD", "Open": 3020.0, "High": 3033.0, "Low": 2968.0, "Close": 3001.0, "GapText": "-49.0 (-1.61%)", "GapRaw": -49.0, "Action": "\u5f85\u6a5f", "Type": "IDLE", "ProfitRate": 35.04}, {"Ticker": "290A.T", "Name": "SYNSPECTIVE INC", "Open": 2130.0, "High": 2140.0, "Low": 1905.0, "Close": 1951.0, "GapText": "-96.0 (-4.69%)", "GapRaw": -96.0, "Action": "\u5f85\u6a5f", "Type": "IDLE", "ProfitRate": -5.04}, {"Ticker": "8306.T", "Name": "MITSUBISHI UFJ FINANCIAL GROUP ", "Open": 3061.0, "High": 3066.0, "Low": 3017.0, "Close": 3031.0, "GapText": "-30.0 (-0.98%)", "GapRaw": -30.0, "Action": "\u9006\u6307\u5024\uff1a2952.6\u5186", "Type": "HOLD_LONG", "ProfitRate": 11.02}, {"Ticker": "1605.T", "Name": "INPEX CORPORATION", "Open": 3650.0, "High": 3727.0, "Low": 3643.0, "Close": 3689.0, "GapText": "+21.0 (+0.57%)", "GapRaw": 21.0, "Action": "\u5f85\u6a5f", "Type": "IDLE", "ProfitRate": 12.95}, {"Ticker": "6613.T", "Name": "QD LASER INC", "Open": 3160.0, "High": 3220.0, "Low": 2620.0, "Close": 2620.0, "GapText": "-700.0 (-21.08%)", "GapRaw": -700.0, "Action": "\u5f85\u6a5f", "Type": "IDLE", "ProfitRate": 47.53}, {"Ticker": "6838.T", "Name": "TAMAGAWA HOLDINGS CO LTD", "Open": 2298.0, "High": 2440.0, "Low": 2201.0, "Close": 2224.0, "GapText": "-38.0 (-1.68%)", "GapRaw": -38.0, "Action": "\u9006\u6307\u5024\uff1a2100.4\u5186", "Type": "HOLD_LONG", "ProfitRate": 104.55}, {"Ticker": "6804.T", "Name": "HOSIDEN CORP", "Open": 2628.0, "High": 2649.0, "Low": 2573.0, "Close": 2595.0, "GapText": "-20.0 (-0.76%)", "GapRaw": -20.0, "Action": "\u5f85\u6a5f", "Type": "IDLE", "ProfitRate": 9.45}, {"Ticker": "6864.T", "Name": "NF HOLDINGS CORPORATION", "Open": 1895.0, "High": 1897.0, "Low": 1788.0, "Close": 1848.0, "GapText": "-50.0 (-2.63%)", "GapRaw": -50.0, "Action": "\u5f85\u6a5f", "Type": "IDLE", "ProfitRate": 24.49}, {"Ticker": "8316.T", "Name": "SUMITOMO MITSUI FINANCIAL GROUP", "Open": 6017.0, "High": 6030.0, "Low": 5933.0, "Close": 5950.0, "GapText": "-115.0 (-1.9%)", "GapRaw": -115.0, "Action": "\u9006\u6307\u5024\uff1a5761.8\u5186", "Type": "HOLD_LONG", "ProfitRate": 5.15}, {"Ticker": "6758.T", "Name": "SONY GROUP CORPORATION", "Open": 3492.0, "High": 3525.0, "Low": 3448.0, "Close": 3525.0, "GapText": "-23.0 (-0.65%)", "GapRaw": -23.0, "Action": "\u5f85\u6a5f", "Type": "IDLE", "ProfitRate": -32.77}, {"Ticker": "9412.T", "Name": "SKY PERFECT JSAT CORPORATION", "Open": 4625.0, "High": 4720.0, "Low": 4425.0, "Close": 4455.0, "GapText": "-115.0 (-2.52%)", "GapRaw": -115.0, "Action": "\u5f85\u6a5f", "Type": "IDLE", "ProfitRate": 66.74}, {"Ticker": "3993.T", "Name": "PKSHA TECHNOLOGY INC", "Open": 2745.0, "High": 2877.0, "Low": 2728.0, "Close": 2858.0, "GapText": "+72.0 (+2.58%)", "GapRaw": 72.0, "Action": "\u5f85\u6a5f", "Type": "IDLE", "ProfitRate": 13.1}, {"Ticker": "464A.T", "Name": "QPS HOLDINGS INC", "Open": 4410.0, "High": 4475.0, "Low": 4080.0, "Close": 4200.0, "GapText": "0.0 (0.0%)", "GapRaw": 0.0, "Action": "\u5f85\u6a5f", "Type": "IDLE", "ProfitRate": 74.62}, {"Ticker": "5857.T", "Name": "ARE HOLDINGS INC", "Open": 3450.0, "High": 3490.0, "Low": 3305.0, "Close": 3335.0, "GapText": "-130.0 (-3.75%)", "GapRaw": -130.0, "Action": "\u5f85\u6a5f", "Type": "IDLE", "ProfitRate": 42.54}, {"Ticker": "186A.T", "Name": "ASTROSCALE HOLDINGS INC", "Open": 3000.0, "High": 3015.0, "Low": 2616.0, "Close": 2694.0, "GapText": "-106.0 (-3.79%)", "GapRaw": -106.0, "Action": "\u5f85\u6a5f", "Type": "IDLE", "ProfitRate": 63.1}, {"Ticker": "1893.T", "Name": "PENTA OCEAN CONSTRUCTION", "Open": 1861.0, "High": 1889.0, "Low": 1780.0, "Close": 1780.0, "GapText": "-77.0 (-4.15%)", "GapRaw": -77.0, "Action": "\u5f85\u6a5f", "Type": "IDLE", "ProfitRate": 42.28}, {"Ticker": "4425.T", "Name": "KUDAN INC", "Open": 1953.0, "High": 1979.0, "Low": 1863.0, "Close": 1881.0, "GapText": "-72.0 (-3.69%)", "GapRaw": -72.0, "Action": "\u5f85\u6a5f", "Type": "IDLE", "ProfitRate": 23.14}, {"Ticker": "7011.T", "Name": "MITSUBISHI HEAVY INDUSTRIES", "Open": 4025.0, "High": 4050.0, "Low": 3863.0, "Close": 3898.0, "GapText": "-46.0 (-1.17%)", "GapRaw": -46.0, "Action": "\u5f85\u6a5f", "Type": "IDLE", "ProfitRate": -15.0}, {"Ticker": "5803.T", "Name": "FUJIKURA", "Open": 5500.0, "High": 5555.0, "Low": 5035.0, "Close": 5140.0, "GapText": "-189.0 (-3.55%)", "GapRaw": -189.0, "Action": "\u5f85\u6a5f", "Type": "IDLE", "ProfitRate": 18.13}, {"Ticker": "6629.T", "Name": "TECHNO HORIZON CO LTD", "Open": 1211.0, "High": 1224.0, "Low": 1110.0, "Close": 1120.0, "GapText": "-79.0 (-6.59%)", "GapRaw": -79.0, "Action": "\u5f85\u6a5f", "Type": "IDLE", "ProfitRate": 57.9}, {"Ticker": "7409.T", "Name": "AEROEDGE CO LTD", "Open": 3605.0, "High": 3620.0, "Low": 3330.0, "Close": 3350.0, "GapText": "-325.0 (-8.84%)", "GapRaw": -325.0, "Action": "\u5f85\u6a5f", "Type": "IDLE", "ProfitRate": -10.28}, {"Ticker": "9984.T", "Name": "SOFTBANK GROUP CORP", "Open": 8020.0, "High": 8038.0, "Low": 7262.0, "Close": 7272.0, "GapText": "-569.0 (-7.26%)", "GapRaw": -569.0, "Action": "\u5f85\u6a5f", "Type": "IDLE", "ProfitRate": 34.85}, {"Ticker": "6981.T", "Name": "MURATA MANUFACTURING CO", "Open": 8227.0, "High": 8383.0, "Low": 7750.0, "Close": 7820.0, "GapText": "-257.0 (-3.18%)", "GapRaw": -257.0, "Action": "\u5f85\u6a5f", "Type": "IDLE", "ProfitRate": 73.19}];
+            const data = [{"Ticker": "5857.T", "Name": "ARE HOLDINGS INC", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u5f85\u6a5f", "Type": "IDLE", "LongProfitRate": 42.54, "ShortProfitRate": 3.33, "ProfitRate": 42.54}, {"Ticker": "3993.T", "Name": "PKSHA TECHNOLOGY INC", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u5f85\u6a5f", "Type": "IDLE", "LongProfitRate": 13.1, "ShortProfitRate": 7.32, "ProfitRate": 13.1}, {"Ticker": "7182.T", "Name": "JAPAN POST BANK CO LTD", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u5f85\u6a5f", "Type": "IDLE", "LongProfitRate": 35.04, "ShortProfitRate": -0.88, "ProfitRate": 35.04}, {"Ticker": "5803.T", "Name": "FUJIKURA", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u5f85\u6a5f", "Type": "IDLE", "LongProfitRate": 18.13, "ShortProfitRate": 2.94, "ProfitRate": 18.13}, {"Ticker": "290A.T", "Name": "SYNSPECTIVE INC", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u5f85\u6a5f", "Type": "IDLE", "LongProfitRate": -5.04, "ShortProfitRate": 4.07, "ProfitRate": -5.04}, {"Ticker": "6629.T", "Name": "TECHNO HORIZON CO LTD", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u5f85\u6a5f", "Type": "IDLE", "LongProfitRate": 57.9, "ShortProfitRate": -2.43, "ProfitRate": 57.9}, {"Ticker": "4704.T", "Name": "TREND MICRO INC", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u9006\u6307\u5024\uff1a5777.0\u5186", "Type": "HOLD_LONG", "LongProfitRate": -41.31, "ShortProfitRate": 0.16, "ProfitRate": -41.31}, {"Ticker": "6804.T", "Name": "HOSIDEN CORP", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u5f85\u6a5f", "Type": "IDLE", "LongProfitRate": 9.45, "ShortProfitRate": -2.86, "ProfitRate": 9.45}, {"Ticker": "464A.T", "Name": "QPS HOLDINGS INC", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u5f85\u6a5f", "Type": "IDLE", "LongProfitRate": 74.62, "ShortProfitRate": -5.88, "ProfitRate": 74.62}, {"Ticker": "4425.T", "Name": "KUDAN INC", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u5f85\u6a5f", "Type": "IDLE", "LongProfitRate": 23.14, "ShortProfitRate": 7.34, "ProfitRate": 23.14}, {"Ticker": "186A.T", "Name": "ASTROSCALE HOLDINGS INC", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u5f85\u6a5f", "Type": "IDLE", "LongProfitRate": 63.1, "ShortProfitRate": 6.85, "ProfitRate": 63.1}, {"Ticker": "7011.T", "Name": "MITSUBISHI HEAVY INDUSTRIES", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u5f85\u6a5f", "Type": "IDLE", "LongProfitRate": -15.0, "ShortProfitRate": 7.5, "ProfitRate": -15.0}, {"Ticker": "3692.T", "Name": "FFRI SECURITY INC", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u5f85\u6a5f", "Type": "IDLE", "LongProfitRate": 1.59, "ShortProfitRate": -2.16, "ProfitRate": 1.59}, {"Ticker": "4417.T", "Name": "GLOBAL SECURITY EXPERTS INC", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u5f85\u6a5f", "Type": "IDLE", "LongProfitRate": 9.12, "ShortProfitRate": -2.8, "ProfitRate": 9.12}, {"Ticker": "6758.T", "Name": "SONY GROUP CORPORATION", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u9006\u6307\u5024\uff1a3452.3\u5186", "Type": "HOLD_LONG", "LongProfitRate": -29.23, "ShortProfitRate": -3.84, "ProfitRate": -29.23}, {"Ticker": "6864.T", "Name": "NF HOLDINGS CORPORATION", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u5f85\u6a5f", "Type": "IDLE", "LongProfitRate": 24.49, "ShortProfitRate": 2.46, "ProfitRate": 24.49}, {"Ticker": "8316.T", "Name": "SUMITOMO MITSUI FINANCIAL GROUP", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u9006\u6307\u5024\uff1a5761.8\u5186", "Type": "HOLD_LONG", "LongProfitRate": 5.15, "ShortProfitRate": 0.2, "ProfitRate": 5.15}, {"Ticker": "1605.T", "Name": "INPEX CORPORATION", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u5f85\u6a5f", "Type": "IDLE", "LongProfitRate": 12.95, "ShortProfitRate": 4.04, "ProfitRate": 12.95}, {"Ticker": "1893.T", "Name": "PENTA OCEAN CONSTRUCTION", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u5f85\u6a5f", "Type": "IDLE", "LongProfitRate": 42.28, "ShortProfitRate": -0.34, "ProfitRate": 42.28}, {"Ticker": "9412.T", "Name": "SKY PERFECT JSAT CORPORATION", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u5f85\u6a5f", "Type": "IDLE", "LongProfitRate": 66.74, "ShortProfitRate": 3.31, "ProfitRate": 66.74}, {"Ticker": "4258.T", "Name": "AMIYA CORP", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u9006\u6307\u5024\uff1a3030.5\u5186", "Type": "HOLD_LONG", "LongProfitRate": -26.19, "ShortProfitRate": 9.55, "ProfitRate": -26.19}, {"Ticker": "9984.T", "Name": "SOFTBANK GROUP CORP", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u9006\u6307\u5024\uff1a7449.0\u5186", "Type": "HOLD_LONG", "LongProfitRate": 27.1, "ShortProfitRate": 1.03, "ProfitRate": 27.1}, {"Ticker": "6981.T", "Name": "MURATA MANUFACTURING CO", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u5f85\u6a5f", "Type": "IDLE", "LongProfitRate": 73.19, "ShortProfitRate": -0.22, "ProfitRate": 73.19}, {"Ticker": "8306.T", "Name": "MITSUBISHI UFJ FINANCIAL GROUP ", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u9006\u6307\u5024\uff1a2952.6\u5186", "Type": "HOLD_LONG", "LongProfitRate": 11.02, "ShortProfitRate": 1.24, "ProfitRate": 11.02}, {"Ticker": "7409.T", "Name": "AEROEDGE CO LTD", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u5f85\u6a5f", "Type": "IDLE", "LongProfitRate": -10.28, "ShortProfitRate": -1.43, "ProfitRate": -10.28}, {"Ticker": "6838.T", "Name": "TAMAGAWA HOLDINGS CO LTD", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u9006\u6307\u5024\uff1a2100.4\u5186", "Type": "HOLD_LONG", "LongProfitRate": 104.55, "ShortProfitRate": 3.91, "ProfitRate": 104.55}, {"Ticker": "6613.T", "Name": "QD LASER INC", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u5f85\u6a5f", "Type": "IDLE", "LongProfitRate": 47.53, "ShortProfitRate": -0.85, "ProfitRate": 47.53}, {"Ticker": "3132.T", "Name": "MACNICA HOLDINGS INC", "Open": NaN, "High": NaN, "Low": NaN, "Close": NaN, "GapText": "nan (nan%)", "GapRaw": NaN, "Action": "\u5f85\u6a5f", "Type": "IDLE", "LongProfitRate": 54.72, "ShortProfitRate": -4.87, "ProfitRate": 54.72}];
+            let currentChartMode = 'long'; 
+            let currentTicker = '';       
 
             function getOwnedStatus(ticker) { return localStorage.getItem('owned_' + ticker) === 'true'; }
             
@@ -145,8 +150,12 @@
                     const rateClass = r.ProfitRate > 0 ? 'rate-plus' : (r.ProfitRate < 0 ? 'rate-minus' : '');
                     const rateText = `<span class="${rateClass}"> (${r.ProfitRate > 0 ? '+':''}${r.ProfitRate}%)</span>`;
                     
+                    // ★ JavaScriptの正しい構文 (else if) に修正
                     let bCls = 'action-badge';
-                    if (r.Type.startsWith('NEW')) bCls += ' new-signal';
+                    if (r.Type === 'NEW_LONG') bCls += ' new-signal';
+                    else if (r.Type === 'NEW_SHORT') bCls += ' new-short-signal';
+                    else if (r.Type === 'HOLD_LONG') bCls += ' hold-signal';
+                    else if (r.Type === 'HOLD_SHORT') bCls += ' hold-short-signal';
                     else if (r.Action.includes('保持') || r.Action.includes('逆指値')) bCls += ' hold-signal';
 
                     const sw = `<label class="switch"><input type="checkbox" ${isOwned ? 'checked' : ''} onchange="toggleOwned('${r.Ticker}', event)"><span class="slider"></span></label>`;
@@ -172,17 +181,54 @@
                 });
             }
 
+            function loadChart(ticker) {
+                currentTicker = ticker;
+                const dir = currentChartMode === 'long' ? 'visualized_charts' : 'visualized_charts_short';
+                document.getElementById('frame').src = dir + '/chart_' + ticker + '.html';
+            }
+
+            function setChartMode(mode) {
+                currentChartMode = mode;
+                renderList(); 
+                if (currentTicker) {
+                    loadChart(currentTicker);
+                }
+            }
+
             function renderList() {
                 const list = document.getElementById('ticker-list');
-                list.innerHTML = '<div style="padding:15px; font-weight:bold; border-bottom:1px solid #ddd; font-size: 0.9rem;">銘柄リスト</div>';
+                
+                list.innerHTML = `
+                    <div style="padding:15px 15px 5px 15px; font-weight:bold; font-size: 0.9rem;">銘柄リスト</div>
+                    <div style="padding:5px 15px 10px 15px; border-bottom:1px solid #ddd; display:flex; gap:5px;">
+                        <button id="btn-long" onclick="setChartMode('long')" style="flex:1; padding:6px; font-size:0.8rem; font-weight:bold; cursor:pointer; border:1px solid var(--border); border-radius:4px;">ロング</button>
+                        <button id="btn-short" onclick="setChartMode('short')" style="flex:1; padding:6px; font-size:0.8rem; font-weight:bold; cursor:pointer; border:1px solid var(--border); border-radius:4px;">ショート</button>
+                    </div>
+                `;
+                
                 data.forEach(r => {
-                    const rateClass = r.ProfitRate > 0 ? 'rate-plus' : (r.ProfitRate < 0 ? 'rate-minus' : '');
+                    const rate = currentChartMode === 'long' ? r.LongProfitRate : r.ShortProfitRate;
+                    const rateClass = rate > 0 ? 'rate-plus' : (rate < 0 ? 'rate-minus' : '');
+                    
                     const div = document.createElement('div');
+                    div.className = 'ticker-list-item';
                     div.style.cssText = 'padding:15px; border-bottom:1px solid #eee; cursor:pointer; font-size: 0.95rem;';
-                    div.innerHTML = `<b>${r.Ticker}</b> <span class="${rateClass}">(${r.ProfitRate}%)</span><br><small style="color:#666;">${r.Name}</small>`;
-                    div.onclick = () => { document.getElementById('frame').src = 'visualized_charts/chart_' + r.Ticker + '.html'; };
+                    if (r.Ticker === currentTicker) div.style.backgroundColor = '#e6f2ff';
+                    
+                    div.innerHTML = `<b>${r.Ticker}</b> <span class="${rateClass}">(${rate > 0 ? '+':''}${rate}%)</span><br><small style="color:#666;">${r.Name}</small>`;
+                    
+                    div.onclick = () => { 
+                        document.querySelectorAll('.ticker-list-item').forEach(el => el.style.backgroundColor = '');
+                        div.style.backgroundColor = '#e6f2ff';
+                        loadChart(r.Ticker); 
+                    };
                     list.appendChild(div);
                 });
+                
+                document.getElementById('btn-long').style.background = currentChartMode === 'long' ? 'var(--primary)' : '#f8f9fa';
+                document.getElementById('btn-long').style.color = currentChartMode === 'long' ? '#fff' : '#212529';
+                document.getElementById('btn-short').style.background = currentChartMode === 'short' ? 'var(--primary)' : '#f8f9fa';
+                document.getElementById('btn-short').style.color = currentChartMode === 'short' ? '#fff' : '#212529';
             }
             renderStatus(); 
         </script>

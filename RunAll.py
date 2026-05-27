@@ -45,9 +45,11 @@ def main():
         ("01_GetValue.py", []),
         ("02_Calculation.py", []),
         ("03_Simulation.py", []),
+        ("03-2_Simulation_Short.py", []),
         ("04_PlotChart.py", []),
-        ("05_Summary.py", []),
-        ("06_CreateDashboard.py", []),
+        ("04-2_PlotChart_Short.py", []),
+        ("05-2_Summary.py", []),
+        ("06-2_CreateDashboard.py", []),
     ]
 
     total_start_time = time.time()
