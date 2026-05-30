@@ -1,0 +1,3 @@
+Date,Action,Price,Reason,Profit,Capital
+2026-03-05,SHORT_SELL,5321.6,デッドクロス,0.0,1.0
+2026-03-05,BUY_BACK,5310.8,当日引け決済,10.8,1.002
