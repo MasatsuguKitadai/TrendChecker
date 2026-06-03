@@ -3,10 +3,11 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import os
 
-# --- 設定 (03/06と共通) ---
+# --- 設定 ---
 DATA_DIR = "calculated_data"
-RESULT_DIR = "simulation_results"
-OUTPUT_CHARTS_DIR = "visualized_charts"
+# ★変更点：読込先と出力先を「固定5%用」に変更
+RESULT_DIR = "simulation_results_fixed"
+OUTPUT_CHARTS_DIR = "visualized_charts_fixed"
 SIM_MONTHS = 6
 
 def visualize_all_analyzed_data():
@@ -40,13 +41,11 @@ def visualize_all_analyzed_data():
                         t_rates.append(0.0)
                     
                     elif action == "SELL":
-                        # 03で計算済みの値幅(Profit)を使用し、騰落率を計算
                         roi = (r['Profit'] / last_buy_price) * 100 if last_buy_price > 0 else 0
                         t_profits.append(r['Profit'])
                         t_rates.append(round(roi, 2))
                     
                     elif action == "HOLDING" and last_buy_price != 0:
-                        # 含み損益(値幅)と含み騰落率(%)の計算
                         unrealized_profit = price - last_buy_price
                         roi = (unrealized_profit / last_buy_price) * 100
                         t_profits.append(round(unrealized_profit, 2))
@@ -59,7 +58,6 @@ def visualize_all_analyzed_data():
                 t_df['Trade_Profit'] = t_profits
                 t_df['Trade_Rate'] = t_rates
                 
-                # 累積率：初期値1.0に対して何％のプラス/マイナスか
                 t_df['Cum_Rate'] = round((t_df['Capital'] - 1.0) * 100, 2)
                 trades = t_df
 
@@ -81,7 +79,6 @@ def visualize_all_analyzed_data():
 
         # 3. 売買履歴テーブル
         if not trades.empty:
-            # 売買の垂直線
             for _, r in trades.iterrows():
                 lc = "#dc3545" if "BUY" in r['Action'] else ("#28a745" if "SELL" in r['Action'] else "#ffc107")
                 fig.add_vline(x=r['Date'], line_width=1, line_dash="dash", line_color=lc, row=1, col=1)
@@ -94,16 +91,15 @@ def visualize_all_analyzed_data():
                     trades['Action'], 
                     trades['Price'].map('{:,.1f}'.format), 
                     trades['Reason'],
-                    # トレードごとの値幅と、そのトレード自体の騰落率
                     [f"{p:+.1f} ({r:+.2f}%)" if a in ["SELL", "HOLDING"] else "-" for p, r, a in zip(trades['Trade_Profit'], trades['Trade_Rate'], trades['Action'])],
-                    # 累積率(倍率)とトータルリターン(%)
                     [f"{cr:+.2f}%" for cr in trades['Cum_Rate']]
                 ], fill_color='#fff', align=['center', 'center', 'right', 'center', 'right', 'right'],
                    font=dict(size=11))), row=3, col=1)
 
-        fig.update_layout(title=f"{ticker} 複利運用レポート (累積率ベース)", template="plotly_white", height=1100, xaxis_rangeslider_visible=False)
+        # ★変更点：タイトルに「固定5%」と明記
+        fig.update_layout(title=f"{ticker} 複利運用レポート (固定5%・累積率ベース)", template="plotly_white", height=1100, xaxis_rangeslider_visible=False)
         fig.write_html(os.path.join(OUTPUT_CHARTS_DIR, f"chart_{ticker}.html"))
-        print(f"◎ {ticker}: チャート生成完了")
+        print(f"◎ {ticker}: 固定5%チャート生成完了")
 
 if __name__ == "__main__":
     visualize_all_analyzed_data()

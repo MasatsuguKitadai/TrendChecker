@@ -26,9 +26,15 @@ def run_script(script_name, args=None):
         return False
 
 def main():
+    # ★変更点1：マルチトラック構成のディレクトリ名に修正
     clean_dirs = [
-        "data", "calculated_data", "simulation_results", 
-        "simulation_results_short", "visualized_charts", "visualized_charts_short"
+        "data", 
+        "calculated_data", 
+        "simulation_results",        # todays_actions.csv用
+        "simulation_results_fixed",  # 固定5%用
+        "simulation_results_atr",    # ATR用
+        "visualized_charts_fixed",   # 固定5%チャート用
+        "visualized_charts_atr"      # ATRチャート用
     ]
 
     print("日次監視環境を初期化しています（古いデータの削除）...")
@@ -40,22 +46,22 @@ def main():
             except Exception as e:
                 pass
 
-    # 日次用プロセス（デフォルトの tickers.txt を使用するため引数なし）
+    # ★変更点2：実行するスクリプトを「固定5%」と「ATR」の並行ルートに修正
     scripts = [
         ("01_GetValue.py", []),
         ("02_Calculation.py", []),
-        ("03_Simulation.py", []),
-        ("03-2_Simulation_Short.py", []),
-        ("04_PlotChart.py", []),
-        ("04-2_PlotChart_Short.py", []),
-        ("05-2_Summary.py", []),
-        ("06-2_CreateDashboard.py", []),
+        ("03_Simulation_Fixed.py", []),  # 分岐A
+        ("03_Simulation_ATR.py", []),    # 分岐B
+        ("04_PlotChart_Fixed.py", []),   # 分岐Aチャート
+        ("04_PlotChart_ATR.py", []),     # 分岐Bチャート
+        ("05_Summary.py", []),           # 合流・指示書作成
+        ("06_CreateDashboard.py", []),   # ダッシュボード生成
     ]
 
     total_start_time = time.time()
     success_count = 0
 
-    print("\n【日次監視プロセス】 を開始します...")
+    print("\n【日次監視プロセス（マルチ戦略版）】 を開始します...")
 
     for script, args in scripts:
         if run_script(script, args):

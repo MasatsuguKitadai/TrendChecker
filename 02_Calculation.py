@@ -38,6 +38,12 @@ def calculate_indicators_v2_auto():
             df['MACD_Signal'] = df['MACD'].ewm(span=9, adjust=False).mean()
             df['MACD_Hist'] = df['MACD'] - df['MACD_Signal']
             
+            high_low = df['High'] - df['Low']
+            high_cp = (df['High'] - df['Close'].shift(1)).abs()
+            low_cp = (df['Low'] - df['Close'].shift(1)).abs()
+            tr = pd.concat([high_low, high_cp, low_cp], axis=1).max(axis=1)
+            df['ATR'] = tr.rolling(window=14).mean() # 14日ATR
+
             # 【変更点1】全数値を小数点第1位までに丸める
             df = df.round(1)
             

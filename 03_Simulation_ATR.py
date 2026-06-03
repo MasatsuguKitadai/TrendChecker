@@ -5,13 +5,12 @@ import os
 # 1. パラメータ設定
 # ==========================================
 INPUT_DIR = "calculated_data"
-RESULT_DIR = "simulation_results"
+# ★変更点：出力先をATR専用のフォルダに変更
+RESULT_DIR = "simulation_results_atr"
 SIM_MONTHS = 6
 
-# --- 運用設定（変更） ---
-# 金額ベースではなく、累積率（初期値 1.0 = 100%）で計算します
+# --- 運用設定 ---
 INITIAL_CAPITAL_RATE = 1.0      
-# ※100株単位の制限(UNIT_SIZE)は廃止し、端数でも全額投資できる前提とします
 
 # --- エントリー条件 (変更なし) ---
 TREND_THRESHOLD = -0.01
@@ -19,10 +18,10 @@ GAP_DOWN_LIMIT = 0.99
 PULLBACK_LIMIT = 0.98
 ENTRY_MA_MID_UPPER = 1.01
 
-# --- イグジット条件 (変更なし) ---
-PROFIT_TARGET_TRAILING = 1.05
-HARD_STOP_LOSS = 0.95
-TRAILING_STOP_LOSS = 0.95
+# --- イグジット条件 (ATRベースの可変ルール) ---
+ATR_MULTI_STOP = 1.5            # 初期損切(ハードストップ)：エントリー価格から【ATRの2.0倍】下落で発動
+ATR_MULTI_TRAIL = 2.0           # トレーリングストップ：期間最高値から【ATRの2.5倍】下落で利益確定
+PROFIT_TARGET_ATR_RATIO = 1.0   # トレイル発動トリガー：エントリー価格から【ATRの1.5倍】上昇したらトレイルモードON
 
 # ==========================================
 # 2. シミュレーションロジック
@@ -38,7 +37,7 @@ def run_realistic_simulation_auto():
         print(f"× {INPUT_DIR} に解析済みデータが見つかりません。")
         return
 
-    print(f"--- 複利運用シミュレーション (端数許容・累積率ベース) ---")
+    print(f"--- 複利運用シミュレーション (ATR可変ルール・累積率ベース) ---")
     
     for file_name in all_files:
         ticker = file_name.replace("_analyzed.csv", "")
@@ -46,6 +45,14 @@ def run_realistic_simulation_auto():
         
         df = pd.read_csv(file_path, index_col="Date", parse_dates=True)
         
+        # 02でATRが計算されているかチェック（計算されていない場合の簡易フォールバック）
+        if 'ATR' not in df.columns:
+            high_low = df['High'] - df['Low']
+            high_cp = (df['High'] - df['Close'].shift(1)).abs()
+            low_cp = (df['Low'] - df['Close'].shift(1)).abs()
+            tr = pd.concat([high_low, high_cp, low_cp], axis=1).max(axis=1)
+            df['ATR'] = tr.rolling(window=14).mean().round(1)
+
         latest_date = df.index.max()
         sim_start_date = latest_date - pd.DateOffset(months=SIM_MONTHS)
         
@@ -57,9 +64,10 @@ def run_realistic_simulation_auto():
         if start_idx < 1: start_idx = 1
 
         # --- 変数初期化 ---
-        current_capital = INITIAL_CAPITAL_RATE # 1.0からスタート
+        current_capital = INITIAL_CAPITAL_RATE 
         position = 0
         buy_price = 0
+        buy_atr = 0            
         max_close_since_buy = 0
         trailing_active = False 
         trade_history = []
@@ -72,6 +80,7 @@ def run_realistic_simulation_auto():
             p_close = df['Close'].iloc[i-1]  
             p_low = df['Low'].iloc[i-1]      
             c_open = df['Open'].iloc[i]      
+            c_atr = df['ATR'].iloc[i]        
             
             p_h, c_h = df['MACD_Hist'].iloc[i-1], df['MACD_Hist'].iloc[i]
             p_ma_s, c_ma_s = df['MA_Short'].iloc[i-1], df['MA_Short'].iloc[i]
@@ -109,6 +118,7 @@ def run_realistic_simulation_auto():
                         })
                     else:
                         buy_price = next_open
+                        buy_atr = df['ATR'].iloc[i+1] 
                         position = 1
                         max_close_since_buy = 0
                         trailing_active = False 
@@ -128,16 +138,12 @@ def run_realistic_simulation_auto():
                         "Price": c_close, "Reason": "POS_OPEN", "Profit": 0, "Capital": round(current_capital, 4)
                     })
                 else:
-                    # 初日であっても最高値の更新とトレイル発動の判定を最初に行う
                     if c_close > max_close_since_buy:
                         max_close_since_buy = c_close
                     
-                    if not trailing_active and (c_close >= buy_price * PROFIT_TARGET_TRAILING):
+                    if not trailing_active and (c_close >= buy_price + (buy_atr * PROFIT_TARGET_ATR_RATIO)):
                         trailing_active = True
                     
-                    # 【ルール変更箇所】
-                    # 原則として初日は売却をスキップするが、5%を超えてトレイルが発動した場合は
-                    # スキップせずにそのまま下の売却判定に進む
                     if holding_days <= 1 and not trailing_active:
                         continue
                     
@@ -145,8 +151,8 @@ def run_realistic_simulation_auto():
                     sell_reason = ""
                     sell_price = 0
                     
-                    hard_stop_price = round(buy_price * HARD_STOP_LOSS, 1)
-                    stop_price = round(max_close_since_buy * TRAILING_STOP_LOSS, 1)
+                    hard_stop_price = round(buy_price - (buy_atr * ATR_MULTI_STOP), 1)
+                    stop_price = round(max_close_since_buy - (c_atr * ATR_MULTI_TRAIL), 1)
                     
                     if next_low <= hard_stop_price:
                         sell_trigger = True
@@ -169,9 +175,13 @@ def run_realistic_simulation_auto():
                         })
                         position = 0
                         buy_price = 0
+                        buy_atr = 0
                         max_close_since_buy = 0
                         trailing_active = False
                         holding_days = 0
+
+        if not trade_history:
+            continue
 
         result_df = pd.DataFrame(trade_history)
         result_df.to_csv(f"{RESULT_DIR}/{ticker}_trades.csv", index=False)
@@ -189,9 +199,10 @@ def run_realistic_simulation_auto():
         })
         print(f"◎ {ticker}: 最終累積率 {current_capital:.4f} (利益率: {profit_rate_pct}%)")
 
-    summary_df = pd.DataFrame(summary_reports)
-    summary_df.to_csv(f"{RESULT_DIR}/overall_summary.csv", index=False)
-    print(f"\n--- シミュレーション完了 ---")
+    if summary_reports:
+        summary_df = pd.DataFrame(summary_reports)
+        summary_df.to_csv(f"{RESULT_DIR}/overall_summary.csv", index=False)
+    print(f"\n--- ATR可変シミュレーション完了 ---")
 
 if __name__ == "__main__":
     run_realistic_simulation_auto()
