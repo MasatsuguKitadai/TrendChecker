@@ -31,14 +31,7 @@ jobs:
         # RunAll.py が 03 -> 07 -> 04 -> 08 を順番に実行します
         run: python RunAll.py
 
-      - name: Send LINE Notification
-        env:
-          LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
-          LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
-          GH_PAGES_URL: ${{ secrets.GH_PAGES_URL }}
-        run: python 07_SendLINE.py
-
-      # ★ 追加：生成されたファイル（Dashboard.html等）をリポジトリに保存（Push）する
+      # 1. 生成されたファイル（Dashboard.html等）をリポジトリに保存（Push）してPagesのビルドをトリガー
       - name: Commit and Push changes
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
@@ -49,6 +42,20 @@ jobs:
             git commit -m "Update analysis results [skip ci]"
             git push
           fi
+
+      # 2. 【追加】GitHub PagesのHTMLビルド・デプロイ完了を2分間待つ
+      - name: Wait for GitHub Pages deployment
+        run: |
+          echo "GitHub Pagesのビルド完了を待つため、2分間（120秒）スリープします..."
+          sleep 120
+
+      # 3. 【位置変更】2分待機した後にLINE通知を送信する
+      - name: Send LINE Notification
+        env:
+          LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+          LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
+          GH_PAGES_URL: ${{ secrets.GH_PAGES_URL }}
+        run: python 07_SendLINE.py
 
       - name: Prepare for Deployment
         run: |

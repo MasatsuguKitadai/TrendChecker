@@ -159,7 +159,9 @@ def check_todays_action():
 
     # 出力
     os.makedirs(os.path.dirname(ACTION_FILE), exist_ok=True)
-    pd.DataFrame(actions_list).to_csv(ACTION_FILE, index=False)
+    df_output = pd.DataFrame(actions_list)
+    df_output = df_output.sort_values(by='Ticker').reset_index(drop=True)
+    df_output.to_csv(ACTION_FILE, index=False)
     print(f"◎ アドバイザー指示書を更新しました (固定 ＆ ATR 両対応)。\n")
 
 if __name__ == "__main__":
