@@ -18,10 +18,16 @@ GAP_DOWN_LIMIT = 0.99
 PULLBACK_LIMIT = 0.98
 ENTRY_MA_MID_UPPER = 1.01
 
-# --- イグジット条件 (オリジナルの固定5%ルールを維持) ---
+# --- ★追加点：急騰（高値掴み）防止パラメータ ---
+MAX_DAILY_RETURN = 1.04        # 当日の終値が前日終値の【4%】以上跳ね上がっていたら見逃す
+
+# --- イグジット条件 ---
 PROFIT_TARGET_TRAILING = 1.05  # 買値から5%上がったらトレイル発動
 HARD_STOP_LOSS = 0.95          # 買値から5%下がったら初期損切
 TRAILING_STOP_LOSS = 0.95      # 期間最高値から5%下がったら利益確定
+
+# --- モメンタム利確設定 (ルール3) ---
+USE_MOMENTUM_EXIT = True       # MACDデッドクロスによるモメンタム利確を有効にするか (True / False)
 
 # ==========================================
 # 2. シミュレーションロジック
@@ -37,7 +43,7 @@ def run_realistic_simulation_auto():
         print(f"× {INPUT_DIR} に解析済みデータが見つかりません。")
         return
 
-    print(f"--- 複利運用シミュレーション (固定5%ルール・累積率ベース) ---")
+    print(f"--- 複利運用シミュレーション (固定5%ルール・急騰スルー機能搭載版) ---")
     
     for file_name in all_files:
         ticker = file_name.replace("_analyzed.csv", "")
@@ -86,6 +92,9 @@ def run_realistic_simulation_auto():
                 ma_slope_rate = (c_ma_m - p_ma_m) / p_ma_m
                 is_trend_acceptable = (ma_slope_rate >= TREND_THRESHOLD)
                 
+                # ★追加：急騰判定（当日の終値が前日終値に対して跳ね上がりすぎていないか）
+                is_not_spiking = (c_close < p_close * MAX_DAILY_RETURN)
+                
                 cond1 = (p_h <= 0 and c_h > 0) 
                 cond2 = (p_ma_s <= p_ma_m and c_ma_s > c_ma_m)
                 
@@ -95,7 +104,8 @@ def run_realistic_simulation_auto():
                 cond3 = cond3_base and is_not_gap_down and is_gentle_pullback
 
                 entry_reason = ""
-                if is_trend_acceptable:
+                # ★変更点：is_not_spiking（急騰していないこと）をエントリーの必須条件に追加
+                if is_trend_acceptable and is_not_spiking:
                     if cond1: entry_reason = "MACD上抜け"
                     elif cond2: entry_reason = "ゴールデンクロス"
                     elif cond3: entry_reason = "押し目買い"
@@ -140,18 +150,25 @@ def run_realistic_simulation_auto():
                     sell_reason = ""
                     sell_price = 0
                     
-                    # 従来の固定比率（掛け算）での計算
-                    hard_stop_price = round(buy_price * HARD_STOP_LOSS, 1)
-                    stop_price = round(max_close_since_buy * TRAILING_STOP_LOSS, 1)
+                    # モメンタム利確（含み益が+5%以上のプラス圏にいる間、MACDがデッドクロスしたら翌朝即時利確）
+                    if USE_MOMENTUM_EXIT and trailing_active and (p_h >= 0 and c_h < 0):
+                        sell_trigger = True
+                        sell_reason = "モメンタム利確(MACDデッドクロス)"
+                        sell_price = next_open
                     
-                    if next_low <= hard_stop_price:
-                        sell_trigger = True
-                        sell_reason = "ハードストップ"
-                        sell_price = next_open if next_open <= hard_stop_price else hard_stop_price
-                    elif trailing_active and (next_low <= stop_price):
-                        sell_trigger = True
-                        sell_reason = "トレーリングストップ"
-                        sell_price = next_open if next_open <= stop_price else stop_price
+                    # モメンタム利確に該当しなかった場合のみ、通常のストップロス判定を実行
+                    if not sell_trigger:
+                        hard_stop_price = round(buy_price * HARD_STOP_LOSS, 1)
+                        stop_price = round(max_close_since_buy * TRAILING_STOP_LOSS, 1)
+                        
+                        if next_low <= hard_stop_price:
+                            sell_trigger = True
+                            sell_reason = "ハードストップ"
+                            sell_price = next_open if next_open <= hard_stop_price else hard_stop_price
+                        elif trailing_active and (next_low <= stop_price):
+                            sell_trigger = True
+                            sell_reason = "トレーリングストップ"
+                            sell_price = next_open if next_open <= stop_price else stop_price
 
                     if sell_trigger:
                         profit_per_share = round(sell_price - buy_price, 2)

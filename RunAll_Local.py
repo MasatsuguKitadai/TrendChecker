@@ -28,7 +28,6 @@ def run_script(script_name, args=None):
 def main():
     # ★変更点1：マルチトラック構成のディレクトリ名に修正
     clean_dirs = [
-        "data", 
         "simulation_results",        # todays_actions.csv用
         "simulation_results_fixed",  # 固定5%用
         "simulation_results_atr",    # ATR用
