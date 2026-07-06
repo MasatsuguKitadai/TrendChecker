@@ -30,6 +30,7 @@ def calculate_indicators_v2_auto():
             df['MA_Short'] = df['Close'].rolling(window=5).mean()
             df['MA_Mid'] = df['Close'].rolling(window=25).mean()
             df['MA_Long'] = df['Close'].rolling(window=75).mean()
+            df['MA_Signal'] = df['Close'].rolling(window=75).mean()
             
             # 4. MACD の計算[cite: 4]
             ema12 = df['Close'].ewm(span=12, adjust=False).mean()
@@ -43,6 +44,7 @@ def calculate_indicators_v2_auto():
             low_cp = (df['Low'] - df['Close'].shift(1)).abs()
             tr = pd.concat([high_low, high_cp, low_cp], axis=1).max(axis=1)
             df['ATR'] = tr.rolling(window=14).mean() # 14日ATR
+            df['Is_Weekly_Up'] = df['MA_Signal'] > df['MA_Signal'].shift(1)
 
             # 【変更点1】全数値を小数点第1位までに丸める
             df = df.round(1)

@@ -61,6 +61,14 @@ def run_realistic_simulation_auto():
             
         if start_idx < 1: start_idx = 1
 
+        # --- ★追加点：週足15週（75日）移動平均線の傾き（上向きフラグ）を計算 ---
+        # 02_Calculation.py側で計算されていなくても、ここで安全に補完・判定できるようにしています
+        if 'MA_Long' in df.columns:
+            df['Is_Weekly_Up'] = df['MA_Long'] > df['MA_Long'].shift(1)
+        else:
+            # 念のためMA_Longがない場合のエラー回避用（常にTrueにしてスルーさせる）
+            df['Is_Weekly_Up'] = True
+
         # --- 変数初期化 ---
         current_capital = INITIAL_CAPITAL_RATE 
         position = 0
@@ -95,6 +103,9 @@ def run_realistic_simulation_auto():
                 # ★追加：急騰判定（当日の終値が前日終値に対して跳ね上がりすぎていないか）
                 is_not_spiking = (c_close < p_close * MAX_DAILY_RETURN)
                 
+                # ★追加：週足15週（75日）線が上向きかどうかのフラグを取得
+                is_weekly_trend_up = df['Is_Weekly_Up'].iloc[i]
+                
                 cond1 = (p_h <= 0 and c_h > 0) 
                 cond2 = (p_ma_s <= p_ma_m and c_ma_s > c_ma_m)
                 
@@ -104,8 +115,8 @@ def run_realistic_simulation_auto():
                 cond3 = cond3_base and is_not_gap_down and is_gentle_pullback
 
                 entry_reason = ""
-                # ★変更点：is_not_spiking（急騰していないこと）をエントリーの必須条件に追加
-                if is_trend_acceptable and is_not_spiking:
+                # ★変更点：is_weekly_trend_up（15週線が上向き）をエントリーの必須条件（AND）に追加
+                if is_trend_acceptable and is_not_spiking and is_weekly_trend_up:
                     if cond1: entry_reason = "MACD上抜け"
                     elif cond2: entry_reason = "ゴールデンクロス"
                     elif cond3: entry_reason = "押し目買い"
@@ -206,10 +217,47 @@ def run_realistic_simulation_auto():
         })
         print(f"◎ {ticker}: 最終累積率 {current_capital:.4f} (利益率: {profit_rate_pct}%)")
 
+    # ==========================================
+    # 3. 全銘柄の総合集計・レポート出力
+    # ==========================================
     if summary_reports:
+        # 個別銘柄のサマリーをDataFrame化
         summary_df = pd.DataFrame(summary_reports)
-        summary_df.to_csv(f"{RESULT_DIR}/overall_summary.csv", index=False)
-    print(f"\n--- 固定5%シミュレーション完了 ---")
+        
+        # --- ★追加：全体の統計指標を計算 ---
+        total_tickers = len(summary_df)
+        avg_profit_rate = summary_df['Profit_Rate_Pct'].mean()  # 全銘柄の平均利益率
+        
+        # 利益が出ている銘柄（プラス）と損益が出ている銘柄（マイナス以下）のカウント
+        win_tickers_count = len(summary_df[summary_df['Profit_Rate_Pct'] > 0])
+        lose_tickers_count = len(summary_df[summary_df['Profit_Rate_Pct'] <= 0])
+        ticker_win_rate = (win_tickers_count / total_tickers * 100) if total_tickers > 0 else 0
 
+        # コンソール画面に見やすく出力
+        print("\n" + "="*50)
+        print("📊 【バックテスト ルール有効性検証サマリー】")
+        print(f" 基準対象期間: 直近 {SIM_MONTHS} ヶ月分")
+        print(f" 総登録銘柄数: {total_tickers} 銘柄")
+        print(f" 全体平均利益率: {avg_profit_rate:.2f} %")
+        print(f" 利益が出ている銘柄数 (勝): {win_tickers_count} 銘柄")
+        print(f" 損益が出ている銘柄数 (負): {lose_tickers_count} 銘柄")
+        print(f" 銘柄勝率 (勝ち銘柄割合): {ticker_win_rate:.1f} %")
+        print("="*50 + "\n")
+
+        # # 総合統計情報を一行にまとめたデータフレームを作成
+        # overall_stats = pd.DataFrame([{
+        #     "Ticker": "TOTAL_SUMMARY",
+        #     "Initial_Capital": total_tickers,      # 銘柄数を分かりやすく代入
+        #     "Final_Capital": avg_profit_rate,      # 平均利益率（％）を代入
+        #     "Total_Profit_JPY": win_tickers_count,  # 勝ち銘柄数を代入
+        #     "Profit_Rate_Pct": lose_tickers_count,  # 負け銘柄数を代入
+        #     "Trade_Count": round(ticker_win_rate, 1) # 銘柄勝率をトレード数欄に代入
+        # }])
+        
+        # 既存の出力項目とカラム構造を統一してCSVの下部に結合
+        # summary_df = pd.concat([summary_df, overall_stats], ignore_index=True)
+        summary_df.to_csv(f"{RESULT_DIR}/overall_summary.csv", index=False)
+        
+    print(f"\n--- シミュレーション完了 ---")
 if __name__ == "__main__":
     run_realistic_simulation_auto()
