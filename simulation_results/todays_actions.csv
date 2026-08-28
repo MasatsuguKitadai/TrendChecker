@@ -4,12 +4,12 @@ Ticker,Name,Open,High,Low,Close,GapText,GapRaw,Action_Fixed,Type_Fixed,Action_AT
 1893.T,PENTA OCEAN CONSTRUCTION,,,,,nan (nan%),,待機,IDLE,ストップ：nan円,HOLD_LONG
 2326.T,DIGITAL ARTS INC,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 2674.T,HARD OFF CORPORATION CO LTD,,,,,nan (nan%),,待機,IDLE,ストップ：nan円,HOLD_LONG
-285A.T,KIOXIA HOLDINGS CORPORATION,,,,,nan (nan%),,保持（約定日）,HOLD_LONG,保持（約定日）,HOLD_LONG
+285A.T,KIOXIA HOLDINGS CORPORATION,,,,,nan (nan%),,ストップ：49780.0円,HOLD_LONG,ストップ：nan円,HOLD_LONG
 290A.T,SYNSPECTIVE INC,,,,,nan (nan%),,待機,IDLE,ストップ：nan円,HOLD_LONG
 3132.T,MACNICA HOLDINGS INC,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 3407.T,ASAHI KASEI CORP,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 3436.T,SUMCO CORPORATION,,,,,nan (nan%),,待機,IDLE,ストップ：nan円,HOLD_LONG
-3692.T,FFRI SECURITY INC,,,,,nan (nan%),,待機,IDLE,待機,IDLE
+3692.T,FFRI SECURITY INC,,,,,nan (nan%),,待機,IDLE,保持（約定日）,HOLD_LONG
 3763.T,PRO-SHIP INC,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 3774.T,INTERNET INITIATIVE JAPAN INC,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 3993.T,PKSHA TECHNOLOGY INC,,,,,nan (nan%),,待機,IDLE,待機,IDLE
@@ -54,7 +54,7 @@ Ticker,Name,Open,High,Low,Close,GapText,GapRaw,Action_Fixed,Type_Fixed,Action_AT
 6701.T,NEC CORP,,,,,nan (nan%),,ストップ：4495.4円,HOLD_LONG,ストップ：nan円,HOLD_LONG
 6702.T,FUJITSU,,,,,nan (nan%),,待機,IDLE,ストップ：nan円,HOLD_LONG
 6758.T,SONY GROUP CORPORATION,,,,,nan (nan%),,ストップ：3687.0円,HOLD_LONG,ストップ：nan円,HOLD_LONG
-6804.T,HOSIDEN CORP,,,,,nan (nan%),,ストップ：2675.2円,HOLD_LONG,待機,IDLE
+6804.T,HOSIDEN CORP,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 6838.T,TAMAGAWA HOLDINGS CO LTD,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 6864.T,NF HOLDINGS CORPORATION,,,,,nan (nan%),,ストップ：1486.8円,HOLD_LONG,ストップ：nan円,HOLD_LONG
 6925.T,USHIO INC,,,,,nan (nan%),,待機,IDLE,待機,IDLE
@@ -64,8 +64,8 @@ Ticker,Name,Open,High,Low,Close,GapText,GapRaw,Action_Fixed,Type_Fixed,Action_AT
 7011.T,MITSUBISHI HEAVY INDUSTRIES,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 7012.T,KAWASAKI HEAVY INDUSTRIES,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 7013.T,IHI CORPORATION,,,,,nan (nan%),,待機,IDLE,待機,IDLE
-7182.T,JAPAN POST BANK CO LTD,,,,,nan (nan%),,ストップ：3107.4円,HOLD_LONG,待機,IDLE
-7409.T,AEROEDGE CO LTD,,,,,nan (nan%),,待機,IDLE,保持（約定日）,HOLD_LONG
+7182.T,JAPAN POST BANK CO LTD,,,,,nan (nan%),,ストップ：3107.4円,HOLD_LONG,保持（約定日）,HOLD_LONG
+7409.T,AEROEDGE CO LTD,,,,,nan (nan%),,待機,IDLE,ストップ：nan円,HOLD_LONG
 7453.T,RYOHIN KEIKAKU CO,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 7711.T,SUKEGAWA ELECTRIC CO,,,,,nan (nan%),,待機,IDLE,ストップ：nan円,HOLD_LONG
 7762.T,CITIZEN WATCH CO LTD,,,,,nan (nan%),,待機,IDLE,待機,IDLE
@@ -73,7 +73,7 @@ Ticker,Name,Open,High,Low,Close,GapText,GapRaw,Action_Fixed,Type_Fixed,Action_AT
 8056.T,BIPROGY INC,,,,,nan (nan%),,ストップ：4437.4円,HOLD_LONG,ストップ：nan円,HOLD_LONG
 8084.T,RYODEN CORPORATION,,,,,nan (nan%),,待機,IDLE,ストップ：nan円,HOLD_LONG
 8306.T,MITSUBISHI UFJ FINANCIAL GROUP ,,,,,nan (nan%),,待機,IDLE,待機,IDLE
-8308.T,RESONA HOLDINGS,,,,,nan (nan%),,保持（約定日）,HOLD_LONG,保持（約定日）,HOLD_LONG
+8308.T,RESONA HOLDINGS,,,,,nan (nan%),,ストップ：2327.5円,HOLD_LONG,ストップ：nan円,HOLD_LONG
 8316.T,SUMITOMO MITSUI FINANCIAL GROUP,,,,,nan (nan%),,ストップ：6365.0円,HOLD_LONG,ストップ：nan円,HOLD_LONG
 8411.T,MIZUHO FINANCIAL GROUP,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 8766.T,TOKIO MARINE HOLDINGS INC,,,,,nan (nan%),,待機,IDLE,待機,IDLE
