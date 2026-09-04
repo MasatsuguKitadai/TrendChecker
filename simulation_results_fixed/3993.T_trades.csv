@@ -1,2 +1,3 @@
 Date,Action,Price,Reason,Profit,Capital
-2026-09-03,BUY_SIGNAL,3090.0,押し目買い,0,1.0
+2026-09-04,BUY,3155.0,押し目買い,0,1.0
+2026-09-04,HOLDING,3205.0,POS_OPEN,0,1.0
