@@ -1,3 +1,4 @@
 Date,Action,Price,Reason,Profit,Capital
 2026-04-10,BUY,3352.0,MACD上抜け,0.0,1.0
 2026-04-15,SELL,3184.4,ハードストップ,-167.6,0.95
+2026-09-17,BUY_SIGNAL,2842.5,ゴールデンクロス,0.0,0.95
