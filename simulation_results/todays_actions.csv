@@ -20,21 +20,21 @@ Ticker,Name,Open,High,Low,Close,GapText,GapRaw,Action_Fixed,Type_Fixed,Action_AT
 4417.T,GLOBAL SECURITY EXPERTS INC,,,,,nan (nan%),,待機,IDLE,ストップ：nan円,HOLD_LONG
 4425.T,KUDAN INC,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 464A.T,QPS HOLDINGS INC,,,,,nan (nan%),,待機,IDLE,待機,IDLE
-4704.T,TREND MICRO INC,,,,,nan (nan%),,待機,IDLE,待機,IDLE
-4776.T,CYBOZU INC,,,,,nan (nan%),,ストップ：2940.2円,HOLD_LONG,ストップ：nan円,HOLD_LONG
+4704.T,TREND MICRO INC,,,,,nan (nan%),,待機,IDLE,保持（約定日）,HOLD_LONG
+4776.T,CYBOZU INC,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 5201.T,AGC INC,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 5332.T,TOTO LTD,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 5333.T,NGK CORP,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 5393.T,NICHIAS CORP,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 5803.T,FUJIKURA,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 5805.T,SWCC CORPORATION,,,,,nan (nan%),,待機,IDLE,待機,IDLE
-5857.T,ARE HOLDINGS INC,,,,,nan (nan%),,ストップ：3239.5円,HOLD_LONG,保持（約定日）,HOLD_LONG
+5857.T,ARE HOLDINGS INC,,,,,nan (nan%),,ストップ：3239.5円,HOLD_LONG,ストップ：nan円,HOLD_LONG
 5991.T,NHK SPRING CO LTD,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 6013.T,TAKUMA CO LTD,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 6055.T,JAPAN MATERIAL CO LTD,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 6101.T,TSUGAMI CORP,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 6103.T,OKUMA CORPORATION,,,,,nan (nan%),,待機,IDLE,待機,IDLE
-6125.T,OKAMOTO MACHINE TOOL WORKS,,,,,nan (nan%),,待機,IDLE,ストップ：nan円,HOLD_LONG
+6125.T,OKAMOTO MACHINE TOOL WORKS,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 6136.T,OSG CORP,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 6203.T,HOWA MACHINERY LTD,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 6208.T,ISHIKAWA SEISAKUSHO,,,,,nan (nan%),,待機,IDLE,待機,IDLE
