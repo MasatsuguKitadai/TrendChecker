@@ -16,7 +16,7 @@ Ticker,Name,Open,High,Low,Close,GapText,GapRaw,Action_Fixed,Type_Fixed,Action_AT
 4183.T,MITSUI CHEMICALS INC,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 4258.T,AMIYA CORP,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 4274.T,HOSOYA PYRO-ENGINEERING CO LTD,,,,,nan (nan%),,待機,IDLE,待機,IDLE
-4307.T,NOMURA RESEARCH INSTITUTE,,,,,nan (nan%),,ストップ：5592.6円,HOLD_LONG,ストップ：nan円,HOLD_LONG
+4307.T,NOMURA RESEARCH INSTITUTE,,,,,nan (nan%),,トレイル：6205.4円,HOLD_LONG,ストップ：nan円,HOLD_LONG
 4417.T,GLOBAL SECURITY EXPERTS INC,,,,,nan (nan%),,待機,IDLE,ストップ：nan円,HOLD_LONG
 4425.T,KUDAN INC,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 464A.T,QPS HOLDINGS INC,,,,,nan (nan%),,待機,IDLE,待機,IDLE
@@ -53,7 +53,7 @@ Ticker,Name,Open,High,Low,Close,GapText,GapRaw,Action_Fixed,Type_Fixed,Action_AT
 6677.T,SK-ELECTRONICS CO,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 6701.T,NEC CORP,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 6702.T,FUJITSU,,,,,nan (nan%),,待機,IDLE,待機,IDLE
-6758.T,SONY GROUP CORPORATION,,,,,nan (nan%),,ストップ：3971.0円,HOLD_LONG,ストップ：nan円,HOLD_LONG
+6758.T,SONY GROUP CORPORATION,,,,,nan (nan%),,トレイル：4287.3円,HOLD_LONG,ストップ：nan円,HOLD_LONG
 6804.T,HOSIDEN CORP,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 6838.T,TAMAGAWA HOLDINGS CO LTD,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 6864.T,NF HOLDINGS CORPORATION,,,,,nan (nan%),,待機,IDLE,待機,IDLE
@@ -69,8 +69,8 @@ Ticker,Name,Open,High,Low,Close,GapText,GapRaw,Action_Fixed,Type_Fixed,Action_AT
 7453.T,RYOHIN KEIKAKU CO,,,,,nan (nan%),,ストップ：4709.2円,HOLD_LONG,ストップ：nan円,HOLD_LONG
 7711.T,SUKEGAWA ELECTRIC CO,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 7762.T,CITIZEN WATCH CO LTD,,,,,nan (nan%),,待機,IDLE,待機,IDLE
-7970.T,SHIN-ETSU POLYMER CO,,,,,nan (nan%),,ストップ：2202.1円,HOLD_LONG,ストップ：nan円,HOLD_LONG
-8056.T,BIPROGY INC,,,,,nan (nan%),,保持（約定日）,HOLD_LONG,保持（約定日）,HOLD_LONG
+7970.T,SHIN-ETSU POLYMER CO,,,,,nan (nan%),,待機,IDLE,ストップ：nan円,HOLD_LONG
+8056.T,BIPROGY INC,,,,,nan (nan%),,ストップ：4673.0円,HOLD_LONG,ストップ：nan円,HOLD_LONG
 8084.T,RYODEN CORPORATION,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 8306.T,MITSUBISHI UFJ FINANCIAL GROUP ,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 8308.T,RESONA HOLDINGS,,,,,nan (nan%),,待機,IDLE,待機,IDLE
