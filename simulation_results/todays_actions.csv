@@ -14,9 +14,9 @@ Ticker,Name,Open,High,Low,Close,GapText,GapRaw,Action_Fixed,Type_Fixed,Action_AT
 3774.T,INTERNET INITIATIVE JAPAN INC,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 3993.T,PKSHA TECHNOLOGY INC,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 4183.T,MITSUI CHEMICALS INC,,,,,nan (nan%),,待機,IDLE,待機,IDLE
-4258.T,AMIYA CORP,,,,,nan (nan%),,待機,IDLE,待機,IDLE
+4258.T,AMIYA CORP,,,,,nan (nan%),,保持（約定日）,HOLD_LONG,保持（約定日）,HOLD_LONG
 4274.T,HOSOYA PYRO-ENGINEERING CO LTD,,,,,nan (nan%),,待機,IDLE,待機,IDLE
-4307.T,NOMURA RESEARCH INSTITUTE,,,,,nan (nan%),,トレイル：6205.4円,HOLD_LONG,ストップ：nan円,HOLD_LONG
+4307.T,NOMURA RESEARCH INSTITUTE,,,,,nan (nan%),,トレイル：6308.0円,HOLD_LONG,ストップ：nan円,HOLD_LONG
 4417.T,GLOBAL SECURITY EXPERTS INC,,,,,nan (nan%),,待機,IDLE,ストップ：nan円,HOLD_LONG
 4425.T,KUDAN INC,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 464A.T,QPS HOLDINGS INC,,,,,nan (nan%),,待機,IDLE,待機,IDLE
@@ -30,7 +30,7 @@ Ticker,Name,Open,High,Low,Close,GapText,GapRaw,Action_Fixed,Type_Fixed,Action_AT
 5805.T,SWCC CORPORATION,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 5857.T,ARE HOLDINGS INC,,,,,nan (nan%),,待機,IDLE,ストップ：nan円,HOLD_LONG
 5991.T,NHK SPRING CO LTD,,,,,nan (nan%),,待機,IDLE,待機,IDLE
-6013.T,TAKUMA CO LTD,,,,,nan (nan%),,待機,IDLE,待機,IDLE
+6013.T,TAKUMA CO LTD,,,,,nan (nan%),,待機,IDLE,保持（約定日）,HOLD_LONG
 6055.T,JAPAN MATERIAL CO LTD,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 6101.T,TSUGAMI CORP,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 6103.T,OKUMA CORPORATION,,,,,nan (nan%),,待機,IDLE,待機,IDLE
@@ -51,8 +51,8 @@ Ticker,Name,Open,High,Low,Close,GapText,GapRaw,Action_Fixed,Type_Fixed,Action_AT
 6629.T,TECHNO HORIZON CO LTD,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 6638.T,MIMAKI ENGINEERING CO.LTD,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 6677.T,SK-ELECTRONICS CO,,,,,nan (nan%),,待機,IDLE,待機,IDLE
-6701.T,NEC CORP,,,,,nan (nan%),,待機,IDLE,待機,IDLE
-6702.T,FUJITSU,,,,,nan (nan%),,待機,IDLE,待機,IDLE
+6701.T,NEC CORP,,,,,nan (nan%),,保持（約定日）,HOLD_LONG,保持（約定日）,HOLD_LONG
+6702.T,FUJITSU,,,,,nan (nan%),,保持（約定日）,HOLD_LONG,保持（約定日）,HOLD_LONG
 6758.T,SONY GROUP CORPORATION,,,,,nan (nan%),,トレイル：4287.3円,HOLD_LONG,ストップ：nan円,HOLD_LONG
 6804.T,HOSIDEN CORP,,,,,nan (nan%),,待機,IDLE,待機,IDLE
 6838.T,TAMAGAWA HOLDINGS CO LTD,,,,,nan (nan%),,待機,IDLE,待機,IDLE
